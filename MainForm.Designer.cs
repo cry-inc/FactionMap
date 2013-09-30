@@ -79,7 +79,7 @@
             this.splitContainer.Panel2.Controls.Add(this.groupBoxStats);
             this.splitContainer.Panel2.Controls.Add(this.groupBoxDrawing);
             this.splitContainer.Size = new System.Drawing.Size(1339, 746);
-            this.splitContainer.SplitterDistance = 1108;
+            this.splitContainer.SplitterDistance = 1120;
             this.splitContainer.SplitterWidth = 2;
             this.splitContainer.TabIndex = 0;
             // 
@@ -88,7 +88,7 @@
             this.mapPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mapPanel.Location = new System.Drawing.Point(0, 0);
             this.mapPanel.Name = "mapPanel";
-            this.mapPanel.Size = new System.Drawing.Size(1108, 746);
+            this.mapPanel.Size = new System.Drawing.Size(1120, 746);
             this.mapPanel.TabIndex = 0;
             // 
             // listBoxLog

@@ -4,36 +4,22 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace MapExtractor
 {
     public partial class MainForm : Form
     {
-        private Point[] neighbors = {
-            new Point( 1,  0),
-            new Point(-1,  0),
-            new Point( 0,  1),
-            new Point( 0, -1),
-            new Point( 1,  1),
-            new Point(-1, -1),
-            new Point(-1,  1),
-            new Point( 1, -1),                             
-        };
-
         private Bitmap img;
 
-        private List<Point> points = new List<Point>();
-        private Dictionary<string, Point> pointMap = new Dictionary<string, Point>();
-
-        private List<Segment> segments = new List<Segment>();
-        private Dictionary<string, Segment> segmentMap = new Dictionary<string, Segment>();
-
-        private List<Vertex> vertices = new List<Vertex>();
-        private Dictionary<string, Vertex> vertexMap = new Dictionary<string, Vertex>();
-        private Dictionary<string, List<Path>> vertexPathMap = new Dictionary<string, List<Path>>();
-
-        private List<Path> paths = new List<Path>();
-        private Dictionary<string, Path> pathMap = new Dictionary<string, Path>();
+        private List<Point> points;
+        private Dictionary<int, Point> pointMap;
+        private List<Segment> segments;
+        private Dictionary<int, List<Segment>> pointSegments;
+        private List<Vertex> vertices;
+        private Dictionary<int, Vertex> vertexMap;
+        private List<Path> paths;
+        private Dictionary<int, List<Path>> vertexPaths;
 
         public MainForm()
         {
@@ -45,144 +31,7 @@ namespace MapExtractor
             mapPanel.BackgroundImageLayout = ImageLayout.None;
         }
 
-        private void UpdateStats()
-        {
-            labelPoints.Text = points.Count.ToString();
-            labelSegments.Text = segments.Count.ToString();
-            labelVertices.Text = vertices.Count.ToString();
-            labelPaths.Text = paths.Count.ToString();
-        }
-
-        private string CreatePointKey(int x, int y)
-        {
-            return x + "|" + y;
-        }
-
-        private string CreatePairKey(Point p1, Point p2)
-        {
-            return CreatePointKey(p1.X, p1.Y) + "||" + CreatePointKey(p2.X, p2.Y);
-        }
-
-        private bool IsColored(int x, int y)
-        {
-            if (x >= img.Width || x < 0 || y < 0 || y >= img.Height)
-                return false;
-            Color c = img.GetPixel(x, y);
-            return (c.R != 255 || c.G != 255 || c.B != 255);
-        }
-
-        private Point CreatePoint(int x, int y)
-        {
-            string key = CreatePointKey(x, y);
-            if (!pointMap.ContainsKey(key))
-            {
-                Point point = new Point(x, y);
-                points.Add(point);
-                pointMap.Add(key, point);
-                return point;
-            }
-            else return pointMap[key];
-        }
-
-        private Segment CreateLineSegement(Point p1, Point p2)
-        {
-            string key1 = CreatePairKey(p1, p2);
-            string key2 = CreatePairKey(p2, p1);
-            if (!segmentMap.ContainsKey(key1) && !segmentMap.ContainsKey(key2))
-            {
-                Segment segment = new Segment(p1, p2);
-                segments.Add(segment);
-                segmentMap.Add(key1, segment);
-                segmentMap.Add(key2, segment);
-                return segment;
-            }
-            else if (segmentMap.ContainsKey(key1))
-                return segmentMap[key1];
-            else
-                return segmentMap[key2];
-        }
-
-        private Vertex CreateVertex(Point p, List<Segment> segments)
-        {
-            string key = CreatePointKey(p.X, p.Y);
-            if (!vertexMap.ContainsKey(key))
-            {
-                Vertex vertex = new Vertex(p, segments);
-                vertices.Add(vertex);
-                vertexMap.Add(key, vertex);
-                return vertex;
-            }
-            else return vertexMap[key];
-        }
-
-        private Path CreatePath(Vertex v1, Vertex v2, List<Point> points)
-        {
-            string key1 = CreatePairKey(v1.Point, v2.Point);
-            string key2 = CreatePairKey(v2.Point, v1.Point);
-            if (!pathMap.ContainsKey(key1) && !pathMap.ContainsKey(key2))
-            {
-                Path path = new Path(v1, v2, points);
-                paths.Add(path);
-                pathMap.Add(key1, path);
-                pathMap.Add(key2, path);
-                return path;
-            }
-            else if (pathMap.ContainsKey(key1))
-                return pathMap[key1];
-            else
-                return pathMap[key2];
-        }
-
-        private void FindSegments()
-        {
-            DateTime start = DateTime.Now;
-            for (int y = 0; y < img.Height; y++)
-                for (int x = 0; x < img.Width; x++)
-                    if (IsColored(x, y))
-                    {
-                        Point p = CreatePoint(x, y);
-                        FindNeighborSegments(p);
-                    }
-            TimeSpan span = DateTime.Now - start;
-            UpdateStats();
-            Log("Done finding segments in " + span.TotalMilliseconds + "ms!");
-        }
-
-        private void FindVertices()
-        {
-            DateTime start = DateTime.Now;
-            foreach (Point p in points)
-            {
-                List<Segment> connected = ListNeighborSegments(p);
-                if (connected.Count != 2)
-                    CreateVertex(p, connected);
-            }
-            TimeSpan span = DateTime.Now - start;
-            UpdateStats();
-            Log("Done finding vertices in " + span.TotalMilliseconds + "ms!");
-        }
-
-        private void FindPaths()
-        {
-            DateTime start = DateTime.Now;
-            foreach (Vertex v in vertices)
-                foreach (Segment s in v.Segments)
-                {
-                    List<Point> pointList = new List<Point>();
-                    pointList.Add(v.Point);
-                    FindEndVertex(v, v.Point, s, pointList);
-                }
-            foreach (Vertex v in vertices)
-            {
-                List<Path> neighborPaths = ListNeighborPaths(v);
-                string key = CreatePointKey(v.Point.X, v.Point.Y);
-                vertexPathMap.Add(key, neighborPaths);
-            }
-            TimeSpan span = DateTime.Now - start;
-            UpdateStats();
-            Log("Done finding paths in " + span.TotalMilliseconds + "ms!");
-        }
-
+        /*
         private void CleanPaths()
         {
             DateTime start = DateTime.Now;
@@ -205,9 +54,9 @@ namespace MapExtractor
                 }
             }
             TimeSpan span = DateTime.Now - start;
-            UpdateStats();
             Log("Done cleaning paths in " + span.TotalMilliseconds + "ms!");
         }
+        
 
         private List<Segment> ListNeighborSegments(Point p)
         {
@@ -218,44 +67,15 @@ namespace MapExtractor
             return connected;
         }
 
-        private void FindNeighborSegments(Point point)
+        private List<Path> ListNeighborPaths(Vertex v)
         {
-            int x = point.X, y = point.Y;
-            for (int i=0; i<neighbors.Length; i++)
-            {
-                Point n = new Point(point.X + neighbors[i].X, point.Y + neighbors[i].Y);
-                if (IsColored(n.X, n.Y))
-                {
-                    Point np = CreatePoint(n.X, n.Y);
-                    CreateLineSegement(point, np);
-                }
-            }
+            List<Path> neighbors = new List<Path>();
+            foreach (Path p in paths)
+                if (p.V1 == v || p.V2 == v)
+                    neighbors.Add(p);
+            return neighbors;
         }
-
-        private void FindEndVertex(Vertex startVertex, Point fromPoint, Segment nextSegment, List<Point> pointList)
-        {
-            Point nextPoint;
-            if (nextSegment.P1 == fromPoint)
-                nextPoint = nextSegment.P2;
-            else if (nextSegment.P2 == fromPoint)
-                nextPoint = nextSegment.P1;
-            else
-                throw new Exception("UH-OH");
-
-            string key = CreatePointKey(nextPoint.X, nextPoint.Y);
-            if (vertexMap.ContainsKey(key))
-            {
-                pointList.Add(nextPoint);
-                CreatePath(startVertex, vertexMap[key], pointList);
-            }
-            else
-                foreach (Segment s in segments)
-                    if (s != nextSegment && (s.P1 == nextPoint || s.P2 == nextPoint))
-                    {
-                        pointList.Add(nextPoint);
-                        FindEndVertex(startVertex, nextPoint, s, pointList);
-                    }
-        }
+        */
 
         private List<Path> ListShortPaths()
         {
@@ -268,15 +88,6 @@ namespace MapExtractor
             return shorts;
         }
 
-        private List<Path> ListNeighborPaths(Vertex v)
-        {
-            List<Path> neighbors = new List<Path>();
-            foreach (Path p in paths)
-                if (p.V1 == v || p.V2 == v)
-                    neighbors.Add(p);
-            return neighbors;
-        }
-
         private void buttonOriginal_Click(object sender, EventArgs e)
         {
             mapPanel.BackgroundImage = img;
@@ -284,49 +95,57 @@ namespace MapExtractor
 
         private void buttonDrawSegments_Click(object sender, EventArgs e)
         {
-            Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
-            Graphics g = Graphics.FromImage(copy);
-            foreach (Segment s in segments)
+            if (segments != null)
             {
-                g.DrawLine(Pens.Red, s.P1, s.P2);
+                Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
+                Graphics g = Graphics.FromImage(copy);
+                foreach (Segment s in segments)
+                    g.DrawLine(Pens.Red, s.P1, s.P2);
+                mapPanel.BackgroundImage = copy;
             }
-            mapPanel.BackgroundImage = copy;
         }
 
         private void buttonDrawVertices_Click(object sender, EventArgs e)
         {
-            Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
-            Graphics g = Graphics.FromImage(copy);
-            foreach (Vertex v in vertices)
+            if (segments != null)
             {
-                g.FillRectangle(Brushes.Green, new Rectangle(v.Point.X - 2, v.Point.Y - 2, 4, 4));
+                Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
+                Graphics g = Graphics.FromImage(copy);
+                foreach (Vertex v in vertices)
+                    g.FillRectangle(Brushes.Green, new Rectangle(v.Point.X - 2, v.Point.Y - 2, 4, 4));
+                mapPanel.BackgroundImage = copy;
             }
-            mapPanel.BackgroundImage = copy;
         }
 
         private void buttonDrawPaths_Click(object sender, EventArgs e)
         {
-            Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
-            Graphics g = Graphics.FromImage(copy);
-            //g.FillRectangle(Brushes.White, 0, 0, copy.Width, copy.Height); 
-            Random random = new Random();
-            foreach (Path p in paths)
+            if (paths != null)
             {
-                Color c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
-                g.DrawLines(new Pen(c), p.Points.ToArray());
+                Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
+                Graphics g = Graphics.FromImage(copy);
+                //g.FillRectangle(Brushes.White, 0, 0, copy.Width, copy.Height); 
+                Random random = new Random();
+                foreach (Path p in paths)
+                {
+                    Color c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+                    g.DrawLines(new Pen(c), p.Points.ToArray());
+                }
+                mapPanel.BackgroundImage = copy;
             }
-            mapPanel.BackgroundImage = copy;
         }
 
         private void buttonDrawShortPaths_Click(object sender, EventArgs e)
         {
-            Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
-            Graphics g = Graphics.FromImage(copy);
-            Random random = new Random();
-            List<Path> shorts = ListShortPaths();
-            foreach (Path p in shorts)
-                g.DrawLines(new Pen(Color.Red, 3), p.Points.ToArray());
-            mapPanel.BackgroundImage = copy;
+            if (paths != null)
+            {
+                Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
+                Graphics g = Graphics.FromImage(copy);
+                Random random = new Random();
+                List<Path> shorts = ListShortPaths();
+                foreach (Path p in shorts)
+                    g.DrawLines(new Pen(Color.Red, 3), p.Points.ToArray());
+                mapPanel.BackgroundImage = copy;
+            }
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
@@ -347,10 +166,40 @@ namespace MapExtractor
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            FindSegments();
-            FindVertices();
-            FindPaths();
-            CleanPaths();
+            Stopwatch stopWatch = new Stopwatch();
+
+            stopWatch.Start();
+            PointExtractor pointExt = new PointExtractor(img);
+            points = pointExt.Points;
+            pointMap = pointExt.PointMap;
+            stopWatch.Stop();
+            Log("Done extracting points in " + stopWatch.ElapsedMilliseconds + "ms");
+
+            stopWatch.Restart();
+            SegmentExtractor segExt = new SegmentExtractor(pointExt);
+            segments = segExt.ExtractSegments();
+            pointSegments = segExt.PointSegments;
+            stopWatch.Stop();
+            Log("Done extracting segments in " + stopWatch.ElapsedMilliseconds + "ms");
+
+            stopWatch.Restart();
+            VertexExtractor vertExt = new VertexExtractor(segExt);
+            vertices = vertExt.Vertices;
+            vertexMap = vertExt.VertexMap;
+            stopWatch.Stop();
+            Log("Done extracting vertices in " + stopWatch.ElapsedMilliseconds + "ms");
+
+            stopWatch.Restart();
+            PathExtractor pathExt = new PathExtractor(vertExt);
+            paths = pathExt.Paths;
+            vertexPaths = pathExt.VertexPaths;
+            stopWatch.Stop();
+            Log("Done extracting paths in " + stopWatch.ElapsedMilliseconds + "ms");
+
+            labelPoints.Text = points.Count.ToString();
+            labelSegments.Text = segments.Count.ToString();
+            labelVertices.Text = vertices.Count.ToString();
+            labelPaths.Text = paths.Count.ToString();
         }
     }
 }

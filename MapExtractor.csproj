@@ -47,10 +47,14 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Path.cs" />
+    <Compile Include="PathExtractor.cs" />
+    <Compile Include="PointExtractor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Segment.cs" />
+    <Compile Include="SegmentExtractor.cs" />
     <Compile Include="Vertex.cs" />
+    <Compile Include="VertexExtractor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
