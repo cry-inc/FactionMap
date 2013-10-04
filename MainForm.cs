@@ -31,63 +31,6 @@ namespace MapExtractor
             mapPanel.BackgroundImageLayout = ImageLayout.None;
         }
 
-        /*
-        private void CleanPaths()
-        {
-            DateTime start = DateTime.Now;
-            List<Path> shortPaths = ListShortPaths();
-            foreach (Path p in shortPaths)
-            {
-                string key1 = CreatePointKey(p.V1.Point.X, p.V1.Point.Y);
-                List<Path> v1Paths = vertexPathMap[key1];
-                string key2 = CreatePointKey(p.V2.Point.X, p.V2.Point.Y);
-                List<Path> v2Paths = vertexPathMap[key2];
-
-                // TODO
-
-                if (v1Paths.Count == 1 && v2Paths.Count == 3)
-                {
-                    // v1 is a dead end, remove path and merge paths at v2
-                    //paths.Remove(p);
-                    //v2Paths.Remove(p);
-                    //MergePaths(v2Paths[0], v2Paths[1]);
-                }
-            }
-            TimeSpan span = DateTime.Now - start;
-            Log("Done cleaning paths in " + span.TotalMilliseconds + "ms!");
-        }
-        
-
-        private List<Segment> ListNeighborSegments(Point p)
-        {
-            List<Segment> connected = new List<Segment>();
-            foreach (Segment s in segments)
-                if (s.P1 == p || s.P2 == p)
-                    connected.Add(s);
-            return connected;
-        }
-
-        private List<Path> ListNeighborPaths(Vertex v)
-        {
-            List<Path> neighbors = new List<Path>();
-            foreach (Path p in paths)
-                if (p.V1 == v || p.V2 == v)
-                    neighbors.Add(p);
-            return neighbors;
-        }
-        */
-
-        private List<Path> ListShortPaths()
-        {
-            List<Path> shorts = new List<Path>();
-            double min = Double.Parse(textBoxMinLength.Text);
-            List<Path> shortPaths = new List<Path>();
-            foreach (Path p in paths)
-                if (p.Length() < min)
-                    shorts.Add(p);
-            return shorts;
-        }
-
         private void buttonOriginal_Click(object sender, EventArgs e)
         {
             mapPanel.BackgroundImage = img;
@@ -130,20 +73,6 @@ namespace MapExtractor
                     Color c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
                     g.DrawLines(new Pen(c), p.Points.ToArray());
                 }
-                mapPanel.BackgroundImage = copy;
-            }
-        }
-
-        private void buttonDrawShortPaths_Click(object sender, EventArgs e)
-        {
-            if (paths != null)
-            {
-                Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
-                Graphics g = Graphics.FromImage(copy);
-                Random random = new Random();
-                List<Path> shorts = ListShortPaths();
-                foreach (Path p in shorts)
-                    g.DrawLines(new Pen(Color.Red, 3), p.Points.ToArray());
                 mapPanel.BackgroundImage = copy;
             }
         }
@@ -193,7 +122,12 @@ namespace MapExtractor
             PathExtractor pathExt = new PathExtractor(vertExt);
             paths = pathExt.Paths;
             vertexPaths = pathExt.VertexPaths;
+            int collapsed = pathExt.CollapseVertices(10);
+            //int loose = pathExt.RemoveLooseEnds();
+            //int merged = pathExt.MergeConsecutivePaths();
             stopWatch.Stop();
+            Log("Collapsed " + collapsed + " vertices!");
+            //Log("Removed " + loose + " loose ends!");
             Log("Done extracting paths in " + stopWatch.ElapsedMilliseconds + "ms");
 
             labelPoints.Text = points.Count.ToString();

@@ -25,13 +25,19 @@ namespace MapExtractor
         public Dictionary<int, Vertex> VertexMap
         { get { return vertexMap != null ? vertexMap : GetVertexMap(); } }
 
+        public int GetVertexKey(Vertex v)
+        { return GetVertexKey(v.Point); }
+
+        public int GetVertexKey(Point p)
+        { return PointExtractor.GetPointKey(p); }
+
         public List<Vertex> ExtractVertices()
         {
             vertices = new List<Vertex>();
             vertexMap = new Dictionary<int, Vertex>();
             foreach (Point p in se.PointExtractor.Points)
             {
-                int key = se.PointExtractor.GetPointKey(p);
+                int key = GetVertexKey(p);
                 List<Segment> connectedSegments = se.PointSegments[key];
                 if (connectedSegments.Count != 2)
                 {

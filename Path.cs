@@ -23,5 +23,10 @@ namespace MapExtractor
             }
             return length;
         }
+
+        public override string ToString()
+        {
+            return V1 + " - " + V2;
+        }
     }
 }

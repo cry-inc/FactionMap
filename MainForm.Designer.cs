@@ -33,8 +33,6 @@
             this.listBoxLog = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.buttonStart = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBoxMinLength = new System.Windows.Forms.TextBox();
             this.groupBoxStats = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -48,7 +46,6 @@
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonOriginal = new System.Windows.Forms.Button();
             this.buttonDrawSegments = new System.Windows.Forms.Button();
-            this.buttonDrawShortPaths = new System.Windows.Forms.Button();
             this.buttonDrawVertices = new System.Windows.Forms.Button();
             this.buttonDrawPaths = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -79,7 +76,7 @@
             this.splitContainer.Panel2.Controls.Add(this.groupBoxStats);
             this.splitContainer.Panel2.Controls.Add(this.groupBoxDrawing);
             this.splitContainer.Size = new System.Drawing.Size(1339, 746);
-            this.splitContainer.SplitterDistance = 1120;
+            this.splitContainer.SplitterDistance = 1132;
             this.splitContainer.SplitterWidth = 2;
             this.splitContainer.TabIndex = 0;
             // 
@@ -88,7 +85,7 @@
             this.mapPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mapPanel.Location = new System.Drawing.Point(0, 0);
             this.mapPanel.Name = "mapPanel";
-            this.mapPanel.Size = new System.Drawing.Size(1120, 746);
+            this.mapPanel.Size = new System.Drawing.Size(1132, 746);
             this.mapPanel.TabIndex = 0;
             // 
             // listBoxLog
@@ -103,8 +100,6 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.buttonStart);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.textBoxMinLength);
             this.groupBox1.Location = new System.Drawing.Point(7, 176);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(200, 188);
@@ -114,30 +109,13 @@
             // 
             // buttonStart
             // 
-            this.buttonStart.Location = new System.Drawing.Point(6, 45);
+            this.buttonStart.Location = new System.Drawing.Point(6, 19);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(188, 23);
             this.buttonStart.TabIndex = 19;
             this.buttonStart.Text = "Start";
             this.buttonStart.UseVisualStyleBackColor = true;
             this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(9, 22);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(112, 13);
-            this.label5.TabIndex = 18;
-            this.label5.Text = "Minimum Path Length:";
-            // 
-            // textBoxMinLength
-            // 
-            this.textBoxMinLength.Location = new System.Drawing.Point(131, 19);
-            this.textBoxMinLength.Name = "textBoxMinLength";
-            this.textBoxMinLength.Size = new System.Drawing.Size(58, 20);
-            this.textBoxMinLength.TabIndex = 16;
-            this.textBoxMinLength.Text = "30";
             // 
             // groupBoxStats
             // 
@@ -233,7 +211,6 @@
             this.groupBoxDrawing.Controls.Add(this.buttonSave);
             this.groupBoxDrawing.Controls.Add(this.buttonOriginal);
             this.groupBoxDrawing.Controls.Add(this.buttonDrawSegments);
-            this.groupBoxDrawing.Controls.Add(this.buttonDrawShortPaths);
             this.groupBoxDrawing.Controls.Add(this.buttonDrawVertices);
             this.groupBoxDrawing.Controls.Add(this.buttonDrawPaths);
             this.groupBoxDrawing.Location = new System.Drawing.Point(7, 370);
@@ -245,7 +222,7 @@
             // 
             // buttonSave
             // 
-            this.buttonSave.Location = new System.Drawing.Point(6, 164);
+            this.buttonSave.Location = new System.Drawing.Point(6, 135);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(188, 23);
             this.buttonSave.TabIndex = 16;
@@ -272,16 +249,6 @@
             this.buttonDrawSegments.Text = "Draw Segments";
             this.buttonDrawSegments.UseVisualStyleBackColor = true;
             this.buttonDrawSegments.Click += new System.EventHandler(this.buttonDrawSegments_Click);
-            // 
-            // buttonDrawShortPaths
-            // 
-            this.buttonDrawShortPaths.Location = new System.Drawing.Point(6, 135);
-            this.buttonDrawShortPaths.Name = "buttonDrawShortPaths";
-            this.buttonDrawShortPaths.Size = new System.Drawing.Size(188, 23);
-            this.buttonDrawShortPaths.TabIndex = 15;
-            this.buttonDrawShortPaths.Text = "Draw Short Paths";
-            this.buttonDrawShortPaths.UseVisualStyleBackColor = true;
-            this.buttonDrawShortPaths.Click += new System.EventHandler(this.buttonDrawShortPaths_Click);
             // 
             // buttonDrawVertices
             // 
@@ -316,7 +283,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBoxStats.ResumeLayout(false);
             this.groupBoxStats.PerformLayout();
             this.groupBoxDrawing.ResumeLayout(false);
@@ -340,11 +306,8 @@
         private System.Windows.Forms.Button buttonDrawPaths;
         private System.Windows.Forms.Label labelPaths;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button buttonDrawShortPaths;
-        private System.Windows.Forms.TextBox textBoxMinLength;
         private System.Windows.Forms.GroupBox groupBoxDrawing;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBoxStats;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.ListBox listBoxLog;
