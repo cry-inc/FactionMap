@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.panelScroll = new System.Windows.Forms.Panel();
+            this.mapBox = new System.Windows.Forms.PictureBox();
             this.listBoxLog = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.buttonStart = new System.Windows.Forms.Button();
@@ -47,17 +49,15 @@
             this.buttonDrawSegments = new System.Windows.Forms.Button();
             this.buttonDrawVertices = new System.Windows.Forms.Button();
             this.buttonDrawPaths = new System.Windows.Forms.Button();
-            this.panelScroll = new System.Windows.Forms.Panel();
-            this.mapBox = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
+            this.panelScroll.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.mapBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBoxStats.SuspendLayout();
             this.groupBoxDrawing.SuspendLayout();
-            this.panelScroll.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.mapBox)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer
@@ -79,9 +79,30 @@
             this.splitContainer.Panel2.Controls.Add(this.groupBoxStats);
             this.splitContainer.Panel2.Controls.Add(this.groupBoxDrawing);
             this.splitContainer.Size = new System.Drawing.Size(1339, 746);
-            this.splitContainer.SplitterDistance = 1134;
+            this.splitContainer.SplitterDistance = 1128;
             this.splitContainer.SplitterWidth = 2;
             this.splitContainer.TabIndex = 0;
+            // 
+            // panelScroll
+            // 
+            this.panelScroll.AutoScroll = true;
+            this.panelScroll.Controls.Add(this.mapBox);
+            this.panelScroll.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelScroll.Location = new System.Drawing.Point(0, 0);
+            this.panelScroll.Name = "panelScroll";
+            this.panelScroll.Size = new System.Drawing.Size(1128, 746);
+            this.panelScroll.TabIndex = 1;
+            // 
+            // mapBox
+            // 
+            this.mapBox.Location = new System.Drawing.Point(0, 0);
+            this.mapBox.Name = "mapBox";
+            this.mapBox.Size = new System.Drawing.Size(100, 50);
+            this.mapBox.TabIndex = 0;
+            this.mapBox.TabStop = false;
+            this.mapBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapBox_MouseDown);
+            this.mapBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.mapBox_MouseMove);
+            this.mapBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mapBox_MouseUp);
             // 
             // listBoxLog
             // 
@@ -265,27 +286,6 @@
             this.buttonDrawPaths.UseVisualStyleBackColor = true;
             this.buttonDrawPaths.Click += new System.EventHandler(this.buttonDrawPaths_Click);
             // 
-            // panelScroll
-            // 
-            this.panelScroll.AutoScroll = true;
-            this.panelScroll.Controls.Add(this.mapBox);
-            this.panelScroll.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelScroll.Location = new System.Drawing.Point(0, 0);
-            this.panelScroll.Name = "panelScroll";
-            this.panelScroll.Size = new System.Drawing.Size(1134, 746);
-            this.panelScroll.TabIndex = 1;
-            // 
-            // mapBox
-            // 
-            this.mapBox.Location = new System.Drawing.Point(0, 0);
-            this.mapBox.Name = "mapBox";
-            this.mapBox.Size = new System.Drawing.Size(100, 50);
-            this.mapBox.TabIndex = 0;
-            this.mapBox.TabStop = false;
-            this.mapBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapBox_MouseDown);
-            this.mapBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.mapBox_MouseMove);
-            this.mapBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mapBox_MouseUp);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -298,12 +298,12 @@
             this.splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
+            this.panelScroll.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.mapBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBoxStats.ResumeLayout(false);
             this.groupBoxStats.PerformLayout();
             this.groupBoxDrawing.ResumeLayout(false);
-            this.panelScroll.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.mapBox)).EndInit();
             this.ResumeLayout(false);
 
         }

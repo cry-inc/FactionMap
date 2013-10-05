@@ -67,7 +67,7 @@ namespace MapExtractor
             {
                 Bitmap copy = new Bitmap(mapBox.Image);
                 Graphics g = Graphics.FromImage(copy);
-                //g.FillRectangle(Brushes.White, 0, 0, copy.Width, copy.Height); 
+                g.FillRectangle(Brushes.White, 0, 0, copy.Width, copy.Height); 
                 Random random = new Random();
                 foreach (Path p in paths)
                 {
@@ -121,12 +121,13 @@ namespace MapExtractor
             PathExtractor pathExt = new PathExtractor(vertExt);
             paths = pathExt.Paths;
             vertexPaths = pathExt.VertexPaths;
-            //int collapsed = pathExt.CollapseVertices(10);
-            //int loose = pathExt.RemoveLooseEnds();
-            //int merged = pathExt.MergeConsecutivePaths();
+            int collapsed = pathExt.CollapseVertices(10);
+            int loose = pathExt.RemoveLooseEnds();
+            int merged = pathExt.MergeConsecutivePaths();
             stopWatch.Stop();
-            //Log("Collapsed " + collapsed + " vertices!");
-            //Log("Removed " + loose + " loose ends!");
+            Log("Collapsed " + collapsed + " vertices!");
+            Log("Removed " + loose + " loose ends!");
+            Log("Merged " + merged + " consecutive paths!");
             Log("Done extracting paths in " + stopWatch.ElapsedMilliseconds + "ms");
 
             labelPoints.Text = points.Count.ToString();
