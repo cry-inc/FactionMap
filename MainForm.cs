@@ -27,24 +27,25 @@ namespace MapExtractor
             string wd = Environment.CurrentDirectory;
             var loadedImg = Image.FromFile("../../map.png");
             img = new Bitmap(loadedImg);
-            mapPanel.BackgroundImage = img;
-            mapPanel.BackgroundImageLayout = ImageLayout.None;
+            mapBox.SizeMode = PictureBoxSizeMode.AutoSize;
+            mapBox.Image = img;
+            mapBox.Cursor = Cursors.Hand;
         }
 
         private void buttonOriginal_Click(object sender, EventArgs e)
         {
-            mapPanel.BackgroundImage = img;
+            mapBox.Image = img;
         }
 
         private void buttonDrawSegments_Click(object sender, EventArgs e)
         {
             if (segments != null)
             {
-                Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
+                Bitmap copy = new Bitmap(mapBox.Image);
                 Graphics g = Graphics.FromImage(copy);
                 foreach (Segment s in segments)
                     g.DrawLine(Pens.Red, s.P1, s.P2);
-                mapPanel.BackgroundImage = copy;
+                mapBox.Image = copy;
             }
         }
 
@@ -52,11 +53,11 @@ namespace MapExtractor
         {
             if (segments != null)
             {
-                Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
+                Bitmap copy = new Bitmap(mapBox.Image);
                 Graphics g = Graphics.FromImage(copy);
                 foreach (Vertex v in vertices)
                     g.FillRectangle(Brushes.Green, new Rectangle(v.Point.X - 2, v.Point.Y - 2, 4, 4));
-                mapPanel.BackgroundImage = copy;
+                mapBox.Image = copy;
             }
         }
 
@@ -64,7 +65,7 @@ namespace MapExtractor
         {
             if (paths != null)
             {
-                Bitmap copy = new Bitmap(mapPanel.BackgroundImage);
+                Bitmap copy = new Bitmap(mapBox.Image);
                 Graphics g = Graphics.FromImage(copy);
                 //g.FillRectangle(Brushes.White, 0, 0, copy.Width, copy.Height); 
                 Random random = new Random();
@@ -73,7 +74,7 @@ namespace MapExtractor
                     Color c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
                     g.DrawLines(new Pen(c), p.Points.ToArray());
                 }
-                mapPanel.BackgroundImage = copy;
+                mapBox.Image = copy;
             }
         }
 
@@ -82,9 +83,7 @@ namespace MapExtractor
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Filter = "PNG Files|*.png";
             if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                mapPanel.BackgroundImage.Save(dialog.FileName);
-            }
+                mapBox.Image.Save(dialog.FileName);
         }
 
         private void Log(string msg)
@@ -122,11 +121,11 @@ namespace MapExtractor
             PathExtractor pathExt = new PathExtractor(vertExt);
             paths = pathExt.Paths;
             vertexPaths = pathExt.VertexPaths;
-            int collapsed = pathExt.CollapseVertices(10);
+            //int collapsed = pathExt.CollapseVertices(10);
             //int loose = pathExt.RemoveLooseEnds();
             //int merged = pathExt.MergeConsecutivePaths();
             stopWatch.Stop();
-            Log("Collapsed " + collapsed + " vertices!");
+            //Log("Collapsed " + collapsed + " vertices!");
             //Log("Removed " + loose + " loose ends!");
             Log("Done extracting paths in " + stopWatch.ElapsedMilliseconds + "ms");
 
@@ -134,6 +133,37 @@ namespace MapExtractor
             labelSegments.Text = segments.Count.ToString();
             labelVertices.Text = vertices.Count.ToString();
             labelPaths.Text = paths.Count.ToString();
+        }
+
+        private bool dragging = false;
+        private Point mousePos = new Point();
+
+        private void mapBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                mousePos = e.Location;
+                dragging = true;
+            }
+        }
+
+        private void mapBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragging &&
+               (mapBox.Image.Width > panelScroll.ClientSize.Width ||
+               mapBox.Image.Height > panelScroll.ClientSize.Height))
+            {
+                Point scrollPos = new Point(
+                    -panelScroll.AutoScrollPosition.X + (mousePos.X - e.X),
+                    -panelScroll.AutoScrollPosition.Y + (mousePos.Y - e.Y)
+                );
+                panelScroll.AutoScrollPosition = scrollPos;
+            }
+        }
+
+        private void mapBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            dragging = false;
         }
     }
 }
