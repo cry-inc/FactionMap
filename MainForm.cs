@@ -5,12 +5,13 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace MapExtractor
 {
     public partial class MainForm : Form
     {
-        private Bitmap img;
+        private Bitmap bmp;
 
         private List<Point> points;
         private Dictionary<int, Point> pointMap;
@@ -21,20 +22,24 @@ namespace MapExtractor
         private List<Path> paths;
         private Dictionary<int, List<Path>> vertexPaths;
 
+        private void LoadImage(Image img)
+        {
+            bmp = new Bitmap(img);
+            mapBox.SizeMode = PictureBoxSizeMode.AutoSize;
+            mapBox.Image = bmp;
+            mapBox.Cursor = Cursors.Hand;
+        }
+
         public MainForm()
         {
             InitializeComponent();
-            string wd = Environment.CurrentDirectory;
-            var loadedImg = Image.FromFile("../../map.png");
-            img = new Bitmap(loadedImg);
-            mapBox.SizeMode = PictureBoxSizeMode.AutoSize;
-            mapBox.Image = img;
-            mapBox.Cursor = Cursors.Hand;
+            Image img = Image.FromFile("../../map.png");
+            LoadImage(img);
         }
 
         private void buttonOriginal_Click(object sender, EventArgs e)
         {
-            mapBox.Image = img;
+            mapBox.Image = bmp;
         }
 
         private void buttonDrawSegments_Click(object sender, EventArgs e)
@@ -97,7 +102,7 @@ namespace MapExtractor
             Stopwatch stopWatch = new Stopwatch();
 
             stopWatch.Start();
-            PointExtractor pointExt = new PointExtractor(img);
+            PointExtractor pointExt = new PointExtractor(bmp);
             points = pointExt.Points;
             pointMap = pointExt.PointMap;
             stopWatch.Stop();
@@ -117,19 +122,36 @@ namespace MapExtractor
             stopWatch.Stop();
             Log("Done extracting vertices in " + stopWatch.ElapsedMilliseconds + "ms");
 
+            
             stopWatch.Restart();
             PathExtractor pathExt = new PathExtractor(vertExt);
             paths = pathExt.Paths;
             vertexPaths = pathExt.VertexPaths;
-            int collapsed = pathExt.CollapseVertices(10);
-            int loose = pathExt.RemoveLooseEnds();
-            int merged = pathExt.MergeConsecutivePaths();
             stopWatch.Stop();
-            Log("Collapsed " + collapsed + " vertices!");
-            Log("Removed " + loose + " loose ends!");
-            Log("Merged " + merged + " consecutive paths!");
             Log("Done extracting paths in " + stopWatch.ElapsedMilliseconds + "ms");
 
+            double ct = Double.Parse(textBoxCollapse.Text, CultureInfo.InvariantCulture);
+            stopWatch.Restart();
+            int collapsed = pathExt.CollapseVertices(ct);
+            stopWatch.Stop();
+            Log("Collapsed " + collapsed + " vertices in " + stopWatch.ElapsedMilliseconds + "ms");
+
+            stopWatch.Restart();
+            int loose = pathExt.RemoveLooseEnds();
+            stopWatch.Stop();
+            Log("Removed " + loose + " loose ends in " + stopWatch.ElapsedMilliseconds + "ms");
+            
+            stopWatch.Restart();
+            int merged = pathExt.MergeConsecutivePaths();
+            stopWatch.Stop();
+            Log("Merged " + merged + " consecutive paths in " + stopWatch.ElapsedMilliseconds + "ms");
+
+            double st = Double.Parse(textBoxSimplify.Text, CultureInfo.InvariantCulture);
+            stopWatch.Restart();
+            pathExt.SimplifyPaths(st);
+            stopWatch.Stop();
+            Log("Simplified paths in " + stopWatch.ElapsedMilliseconds + "ms");
+            
             labelPoints.Text = points.Count.ToString();
             labelSegments.Text = segments.Count.ToString();
             labelVertices.Text = vertices.Count.ToString();
@@ -165,6 +187,17 @@ namespace MapExtractor
         private void mapBox_MouseUp(object sender, MouseEventArgs e)
         {
             dragging = false;
+        }
+
+        private void buttonLoad_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openDialog = new OpenFileDialog();
+            openDialog.Filter = "PNG IMAGE|*.png";
+            if (openDialog.ShowDialog() == DialogResult.OK)
+            {
+                Image img = Image.FromFile(openDialog.FileName);
+                LoadImage(img);
+            }
         }
     }
 }

@@ -33,6 +33,7 @@
             this.mapBox = new System.Windows.Forms.PictureBox();
             this.listBoxLog = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.buttonLoad = new System.Windows.Forms.Button();
             this.buttonStart = new System.Windows.Forms.Button();
             this.groupBoxStats = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -49,6 +50,10 @@
             this.buttonDrawSegments = new System.Windows.Forms.Button();
             this.buttonDrawVertices = new System.Windows.Forms.Button();
             this.buttonDrawPaths = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBoxCollapse = new System.Windows.Forms.TextBox();
+            this.textBoxSimplify = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -115,6 +120,11 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.textBoxSimplify);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.textBoxCollapse);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.buttonLoad);
             this.groupBox1.Controls.Add(this.buttonStart);
             this.groupBox1.Location = new System.Drawing.Point(7, 176);
             this.groupBox1.Name = "groupBox1";
@@ -123,9 +133,19 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Processing";
             // 
+            // buttonLoad
+            // 
+            this.buttonLoad.Location = new System.Drawing.Point(6, 19);
+            this.buttonLoad.Name = "buttonLoad";
+            this.buttonLoad.Size = new System.Drawing.Size(188, 23);
+            this.buttonLoad.TabIndex = 20;
+            this.buttonLoad.Text = "Load Binary Image";
+            this.buttonLoad.UseVisualStyleBackColor = true;
+            this.buttonLoad.Click += new System.EventHandler(this.buttonLoad_Click);
+            // 
             // buttonStart
             // 
-            this.buttonStart.Location = new System.Drawing.Point(6, 19);
+            this.buttonStart.Location = new System.Drawing.Point(6, 48);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(188, 23);
             this.buttonStart.TabIndex = 19;
@@ -286,6 +306,40 @@
             this.buttonDrawPaths.UseVisualStyleBackColor = true;
             this.buttonDrawPaths.Click += new System.EventHandler(this.buttonDrawPaths_Click);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 80);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(100, 13);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Collapse Threshold:";
+            // 
+            // textBoxCollapse
+            // 
+            this.textBoxCollapse.Location = new System.Drawing.Point(124, 77);
+            this.textBoxCollapse.Name = "textBoxCollapse";
+            this.textBoxCollapse.Size = new System.Drawing.Size(70, 20);
+            this.textBoxCollapse.TabIndex = 22;
+            this.textBoxCollapse.Text = "10";
+            // 
+            // textBoxSimplify
+            // 
+            this.textBoxSimplify.Location = new System.Drawing.Point(124, 103);
+            this.textBoxSimplify.Name = "textBoxSimplify";
+            this.textBoxSimplify.Size = new System.Drawing.Size(70, 20);
+            this.textBoxSimplify.TabIndex = 24;
+            this.textBoxSimplify.Text = "2";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 106);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(95, 13);
+            this.label6.TabIndex = 23;
+            this.label6.Text = "Simplify Threshold:";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -301,6 +355,7 @@
             this.panelScroll.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.mapBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.groupBoxStats.ResumeLayout(false);
             this.groupBoxStats.PerformLayout();
             this.groupBoxDrawing.ResumeLayout(false);
@@ -331,6 +386,11 @@
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Panel panelScroll;
         private System.Windows.Forms.PictureBox mapBox;
+        private System.Windows.Forms.Button buttonLoad;
+        private System.Windows.Forms.TextBox textBoxSimplify;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBoxCollapse;
+        private System.Windows.Forms.Label label5;
     }
 }
 

@@ -28,5 +28,44 @@ namespace MapExtractor
         {
             return V1 + " - " + V2;
         }
+
+        public void Simplify(double eps)
+        {
+            Points = SimplifyLine(Points, eps);
+        }
+
+        private static List<Point> SimplifyLine(List<Point> points, double eps)
+        {
+            Line l = new Line(points[0], points[points.Count - 1]);
+            double maxDist = 0;
+            int maxIndex = 0;
+            for (int i = 1; i < points.Count - 1; i++) {
+                double dist = l.PointDistance(points[i]);
+                if (dist > maxDist)
+                {
+                    maxDist = dist;
+                    maxIndex = i;
+                }
+            }
+            if (maxDist > eps)
+            {
+                List<Point> newPoints = new List<Point>();
+                List<Point> list1 = points.GetRange(0, maxIndex);
+                List<Point> list2 = points.GetRange(maxIndex, points.Count - maxIndex);
+                list1 = SimplifyLine(list1, eps);
+                list2 = SimplifyLine(list2, eps);
+                newPoints.AddRange(list1);
+                newPoints.RemoveAt(newPoints.Count - 1);
+                newPoints.AddRange(list2);
+                return newPoints;
+            }
+            else
+            {
+                List<Point> newPoints = new List<Point>();
+                newPoints.Add(points[0]);
+                newPoints.Add(points[points.Count - 1]);
+                return newPoints;
+            }
+        }
     }
 }

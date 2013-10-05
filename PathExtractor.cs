@@ -305,6 +305,14 @@ namespace MapExtractor
             return merged;
         }
 
+
+
+        public void SimplifyPaths(double threshold)
+        {
+            foreach (Path p in paths)
+                p.Simplify(threshold);
+        }
+
         private Dictionary<long, Path> GetPathMap()
         {
             if (pathMap == null)
