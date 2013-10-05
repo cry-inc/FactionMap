@@ -40,6 +40,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Edge.cs" />
+    <Compile Include="HalfEdge.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -47,9 +49,12 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Node.cs" />
     <Compile Include="Path.cs" />
     <Compile Include="PathExtractor.cs" />
     <Compile Include="PointExtractor.cs" />
+    <Compile Include="Polygon.cs" />
+    <Compile Include="PolygonExtractor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Segment.cs" />
