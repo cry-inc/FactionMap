@@ -6,12 +6,19 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Globalization;
+using System.Drawing.Drawing2D;
 
 namespace MapExtractor
 {
     public partial class MainForm : Form
     {
         private Bitmap bmp;
+
+        private PointExtractor pointExt;
+        private SegmentExtractor segExt;
+        private VertexExtractor vertExt;
+        private PathExtractor pathExt;
+        private PolygonExtractor polyExt;
 
         private List<Point> points;
         private Dictionary<int, Point> pointMap;
@@ -21,6 +28,7 @@ namespace MapExtractor
         private Dictionary<int, Vertex> vertexMap;
         private List<Path> paths;
         private Dictionary<int, List<Path>> vertexPaths;
+        private List<Polygon> polygons;
 
         private void LoadImage(Image img)
         {
@@ -72,13 +80,41 @@ namespace MapExtractor
             {
                 Bitmap copy = new Bitmap(mapBox.Image);
                 Graphics g = Graphics.FromImage(copy);
-                g.FillRectangle(Brushes.White, 0, 0, copy.Width, copy.Height); 
+                g.FillRectangle(Brushes.White, 0, 0, copy.Width, copy.Height);
                 Random random = new Random();
                 foreach (Path p in paths)
                 {
                     Color c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
                     g.DrawLines(new Pen(c), p.Points.ToArray());
                 }
+                mapBox.Image = copy;
+            }
+        }
+
+        private void buttonPolygons_Click(object sender, EventArgs e)
+        {
+            if (polygons != null)
+            {
+                Bitmap copy = new Bitmap(mapBox.Image);
+                Graphics g = Graphics.FromImage(copy);
+                g.FillRectangle(Brushes.White, 0, 0, copy.Width, copy.Height);
+                Random random = new Random();
+                foreach (Polygon p in polygons)
+                {
+                    Color c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+                    Point[] polygonPoints = p.GetPoints();
+                    g.FillPolygon(new SolidBrush(c), polygonPoints);
+                    g.DrawPolygon(Pens.Black, polygonPoints);
+                }
+                /*
+                for (int i=0; i<polyExt.Nodes.Count; i++)
+                {
+                    Node n = polyExt.Nodes[i];
+                    g.FillRectangle(Brushes.Black, new Rectangle(n.X - 3, n.Y - 3, 6, 6));
+                    string s = i + " (" + n.X + "," + n.Y + ")";
+                    g.DrawString(s, DefaultFont, Brushes.Black, n.X + 6, n.Y - 6);
+                }
+                */
                 mapBox.Image = copy;
             }
         }
@@ -102,29 +138,28 @@ namespace MapExtractor
             Stopwatch stopWatch = new Stopwatch();
 
             stopWatch.Start();
-            PointExtractor pointExt = new PointExtractor(bmp);
+            pointExt = new PointExtractor(bmp);
             points = pointExt.Points;
             pointMap = pointExt.PointMap;
             stopWatch.Stop();
             Log("Done extracting points in " + stopWatch.ElapsedMilliseconds + "ms");
 
             stopWatch.Restart();
-            SegmentExtractor segExt = new SegmentExtractor(pointExt);
+            segExt = new SegmentExtractor(pointExt);
             segments = segExt.ExtractSegments();
             pointSegments = segExt.PointSegments;
             stopWatch.Stop();
             Log("Done extracting segments in " + stopWatch.ElapsedMilliseconds + "ms");
 
             stopWatch.Restart();
-            VertexExtractor vertExt = new VertexExtractor(segExt);
+            vertExt = new VertexExtractor(segExt);
             vertices = vertExt.Vertices;
             vertexMap = vertExt.VertexMap;
             stopWatch.Stop();
             Log("Done extracting vertices in " + stopWatch.ElapsedMilliseconds + "ms");
 
-            
             stopWatch.Restart();
-            PathExtractor pathExt = new PathExtractor(vertExt);
+            pathExt = new PathExtractor(vertExt);
             paths = pathExt.Paths;
             vertexPaths = pathExt.VertexPaths;
             stopWatch.Stop();
@@ -151,11 +186,18 @@ namespace MapExtractor
             pathExt.SimplifyPaths(st);
             stopWatch.Stop();
             Log("Simplified paths in " + stopWatch.ElapsedMilliseconds + "ms");
+
+            stopWatch.Restart();
+            polyExt = new PolygonExtractor(pathExt.Paths, bmp);
+            polygons = polyExt.ExtractPolygons();
+            stopWatch.Stop();
+            Log("Extracted polygons in " + stopWatch.ElapsedMilliseconds + "ms");
             
             labelPoints.Text = points.Count.ToString();
             labelSegments.Text = segments.Count.ToString();
             labelVertices.Text = vertices.Count.ToString();
             labelPaths.Text = paths.Count.ToString();
+            labelPolygons.Text = polygons.Count.ToString();
         }
 
         private bool dragging = false;

@@ -55,5 +55,14 @@ namespace MapExtractor
         {
             return new PointF(p.X * (float)v, p.Y * (float)v);
         }
+
+        public double Angle()
+        {
+            Point v = new Point(P2.X - P1.X, P2.Y - P1.Y);
+            double length = Math.Sqrt(v.X * v.X + v.Y * v.Y);
+            double x = v.X / length;
+            double y = v.Y / length;
+            return Math.Atan2(x, y);
+        }
     }
 }

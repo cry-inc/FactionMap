@@ -33,9 +33,15 @@
             this.mapBox = new System.Windows.Forms.PictureBox();
             this.listBoxLog = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBoxSimplify = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBoxCollapse = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.buttonLoad = new System.Windows.Forms.Button();
             this.buttonStart = new System.Windows.Forms.Button();
             this.groupBoxStats = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.labelPolygons = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -50,10 +56,7 @@
             this.buttonDrawSegments = new System.Windows.Forms.Button();
             this.buttonDrawVertices = new System.Windows.Forms.Button();
             this.buttonDrawPaths = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBoxCollapse = new System.Windows.Forms.TextBox();
-            this.textBoxSimplify = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
+            this.buttonDrawPolygons = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -84,7 +87,7 @@
             this.splitContainer.Panel2.Controls.Add(this.groupBoxStats);
             this.splitContainer.Panel2.Controls.Add(this.groupBoxDrawing);
             this.splitContainer.Size = new System.Drawing.Size(1339, 746);
-            this.splitContainer.SplitterDistance = 1128;
+            this.splitContainer.SplitterDistance = 1127;
             this.splitContainer.SplitterWidth = 2;
             this.splitContainer.TabIndex = 0;
             // 
@@ -95,7 +98,7 @@
             this.panelScroll.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelScroll.Location = new System.Drawing.Point(0, 0);
             this.panelScroll.Name = "panelScroll";
-            this.panelScroll.Size = new System.Drawing.Size(1128, 746);
+            this.panelScroll.Size = new System.Drawing.Size(1127, 746);
             this.panelScroll.TabIndex = 1;
             // 
             // mapBox
@@ -133,6 +136,40 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Processing";
             // 
+            // textBoxSimplify
+            // 
+            this.textBoxSimplify.Location = new System.Drawing.Point(124, 103);
+            this.textBoxSimplify.Name = "textBoxSimplify";
+            this.textBoxSimplify.Size = new System.Drawing.Size(70, 20);
+            this.textBoxSimplify.TabIndex = 24;
+            this.textBoxSimplify.Text = "2";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 106);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(95, 13);
+            this.label6.TabIndex = 23;
+            this.label6.Text = "Simplify Threshold:";
+            // 
+            // textBoxCollapse
+            // 
+            this.textBoxCollapse.Location = new System.Drawing.Point(124, 77);
+            this.textBoxCollapse.Name = "textBoxCollapse";
+            this.textBoxCollapse.Size = new System.Drawing.Size(70, 20);
+            this.textBoxCollapse.TabIndex = 22;
+            this.textBoxCollapse.Text = "10";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 80);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(100, 13);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Collapse Threshold:";
+            // 
             // buttonLoad
             // 
             this.buttonLoad.Location = new System.Drawing.Point(6, 19);
@@ -155,6 +192,8 @@
             // 
             // groupBoxStats
             // 
+            this.groupBoxStats.Controls.Add(this.label7);
+            this.groupBoxStats.Controls.Add(this.labelPolygons);
             this.groupBoxStats.Controls.Add(this.label4);
             this.groupBoxStats.Controls.Add(this.label1);
             this.groupBoxStats.Controls.Add(this.label2);
@@ -169,6 +208,24 @@
             this.groupBoxStats.TabIndex = 19;
             this.groupBoxStats.TabStop = false;
             this.groupBoxStats.Text = "Stats";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 118);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(53, 13);
+            this.label7.TabIndex = 15;
+            this.label7.Text = "Polygons:";
+            // 
+            // labelPolygons
+            // 
+            this.labelPolygons.AutoSize = true;
+            this.labelPolygons.Location = new System.Drawing.Point(76, 118);
+            this.labelPolygons.Name = "labelPolygons";
+            this.labelPolygons.Size = new System.Drawing.Size(13, 13);
+            this.labelPolygons.TabIndex = 16;
+            this.labelPolygons.Text = "0";
             // 
             // label4
             // 
@@ -244,6 +301,7 @@
             // 
             // groupBoxDrawing
             // 
+            this.groupBoxDrawing.Controls.Add(this.buttonDrawPolygons);
             this.groupBoxDrawing.Controls.Add(this.buttonSave);
             this.groupBoxDrawing.Controls.Add(this.buttonOriginal);
             this.groupBoxDrawing.Controls.Add(this.buttonDrawSegments);
@@ -258,7 +316,7 @@
             // 
             // buttonSave
             // 
-            this.buttonSave.Location = new System.Drawing.Point(6, 135);
+            this.buttonSave.Location = new System.Drawing.Point(6, 164);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(188, 23);
             this.buttonSave.TabIndex = 16;
@@ -306,39 +364,15 @@
             this.buttonDrawPaths.UseVisualStyleBackColor = true;
             this.buttonDrawPaths.Click += new System.EventHandler(this.buttonDrawPaths_Click);
             // 
-            // label5
+            // buttonDrawPolygons
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 80);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(100, 13);
-            this.label5.TabIndex = 21;
-            this.label5.Text = "Collapse Threshold:";
-            // 
-            // textBoxCollapse
-            // 
-            this.textBoxCollapse.Location = new System.Drawing.Point(124, 77);
-            this.textBoxCollapse.Name = "textBoxCollapse";
-            this.textBoxCollapse.Size = new System.Drawing.Size(70, 20);
-            this.textBoxCollapse.TabIndex = 22;
-            this.textBoxCollapse.Text = "10";
-            // 
-            // textBoxSimplify
-            // 
-            this.textBoxSimplify.Location = new System.Drawing.Point(124, 103);
-            this.textBoxSimplify.Name = "textBoxSimplify";
-            this.textBoxSimplify.Size = new System.Drawing.Size(70, 20);
-            this.textBoxSimplify.TabIndex = 24;
-            this.textBoxSimplify.Text = "2";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 106);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(95, 13);
-            this.label6.TabIndex = 23;
-            this.label6.Text = "Simplify Threshold:";
+            this.buttonDrawPolygons.Location = new System.Drawing.Point(6, 135);
+            this.buttonDrawPolygons.Name = "buttonDrawPolygons";
+            this.buttonDrawPolygons.Size = new System.Drawing.Size(188, 23);
+            this.buttonDrawPolygons.TabIndex = 17;
+            this.buttonDrawPolygons.Text = "Draw Polygons";
+            this.buttonDrawPolygons.UseVisualStyleBackColor = true;
+            this.buttonDrawPolygons.Click += new System.EventHandler(this.buttonPolygons_Click);
             // 
             // MainForm
             // 
@@ -391,6 +425,9 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBoxCollapse;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label labelPolygons;
+        private System.Windows.Forms.Button buttonDrawPolygons;
     }
 }
 
