@@ -12,6 +12,8 @@ namespace MapExtractor
         public List<Node> Nodes = new List<Node>();
         public Dictionary<int, Node> NodeMap = new Dictionary<int, Node>();
         public Dictionary<int, List<HalfEdge>> NodeHalfEdges = new Dictionary<int, List<HalfEdge>>();
+        public Dictionary<long, List<Polygon>> EdgePolygons = new Dictionary<long, List<Polygon>>();
+        public Dictionary<int, List<Polygon>> PolygonNeighbors = new Dictionary<int, List<Polygon>>();
 
         private List<Polygon> polygons;
 
@@ -98,9 +100,9 @@ namespace MapExtractor
                             edgesList.Add(currentHalfEdge);
                             vistedHalfEdges.Add(currentKey, true);
                         }
-                        Polygon polygon = new Polygon(edgesList);
+                        Polygon polygon = new Polygon(edgesList, polygons.Count);
                         if (!deadEnd && polygon.IsClockWise())
-                            polygons.Add(polygon);
+                            AddPolygon(polygon);
                         else
                         {
                             foreach (HalfEdge used in edgesList)
@@ -112,7 +114,20 @@ namespace MapExtractor
                     }
                 }
             }
+            CreateNeighborLists();
             return polygons;
+        }
+
+        public void AddPolygon(Polygon polygon)
+        {
+            polygons.Add(polygon);
+            foreach (Edge e in polygon.Edges)
+            {
+                long edgeKey = GetEdgeKey(e);
+                if (!EdgePolygons.ContainsKey(edgeKey))
+                    EdgePolygons.Add(edgeKey, new List<Polygon>());
+                EdgePolygons[edgeKey].Add(polygon);
+            }
         }
 
         public HalfEdge FindNextUnvisitedHalfEdge(HalfEdge halfEdge, Dictionary<long,bool> vistedHalfEdges)
@@ -191,6 +206,22 @@ namespace MapExtractor
             else
                 line = new Line(new Point(he.Start.X, he.Start.Y), new Point(points[points.Count - 2].X, points[points.Count - 2].Y));
             return line.Angle();
+        }
+
+        private void CreateNeighborLists()
+        {
+            foreach (Polygon p in polygons)
+            {
+                List<Polygon> neighbors = new List<Polygon>();
+                foreach (Edge e in p.Edges)
+                {
+                    long edgeKey = GetEdgeKey(e);
+                    foreach (Polygon n in EdgePolygons[edgeKey])
+                        if (n != p)
+                            neighbors.Add(n);
+                }
+                PolygonNeighbors.Add(p.Id, neighbors);
+            }
         }
 
         public long GetEdgeKey(Node n1, Node n2)
