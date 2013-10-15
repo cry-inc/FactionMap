@@ -102,19 +102,12 @@ namespace MapExtractor
                 foreach (Polygon p in polygons)
                 {
                     Color c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
-                    Point[] polygonPoints = p.GetPoints();
+                    Point[] polygonPoints = p.Points.ToArray();
                     g.FillPolygon(new SolidBrush(c), polygonPoints);
                     g.DrawPolygon(Pens.Black, polygonPoints);
+                    g.DrawString(p.Id.ToString(), DefaultFont, Brushes.Black, p.Centroid);
+                    g.DrawRectangle(Pens.Gray, p.XMin, p.YMin, p.XMax - p.XMin, p.YMax - p.YMin);
                 }
-                /*
-                for (int i=0; i<polyExt.Nodes.Count; i++)
-                {
-                    Node n = polyExt.Nodes[i];
-                    g.FillRectangle(Brushes.Black, new Rectangle(n.X - 3, n.Y - 3, 6, 6));
-                    string s = i + " (" + n.X + "," + n.Y + ")";
-                    g.DrawString(s, DefaultFont, Brushes.Black, n.X + 6, n.Y - 6);
-                }
-                */
                 mapBox.Image = copy;
             }
         }
