@@ -91,7 +91,7 @@ namespace MapExtractor
             }
         }
 
-        private void buttonPolygons_Click(object sender, EventArgs e)
+        private void buttonDrawPolygons_Click(object sender, EventArgs e)
         {
             if (polygons != null)
             {
@@ -193,6 +193,15 @@ namespace MapExtractor
             labelPolygons.Text = polygons.Count.ToString();
         }
 
+        private Polygon FindPolygon(Point point)
+        {
+            Polygon polygon = null;
+            foreach (Polygon p in polygons)
+                if (p.IsInside(point))
+                    polygon = p;
+            return polygon;
+        }
+
         private bool dragging = false;
         private Point mousePos = new Point();
 
@@ -216,6 +225,25 @@ namespace MapExtractor
                     -panelScroll.AutoScrollPosition.Y + (mousePos.Y - e.Y)
                 );
                 panelScroll.AutoScrollPosition = scrollPos;
+            }
+
+            if (checkBoxInteractive.Checked && polygons != null)
+            {
+                
+                Polygon polygon = FindPolygon(e.Location);
+                if (polygon != null)
+                {
+                    buttonDrawPolygons_Click(null, null);
+                    Graphics g = Graphics.FromImage(mapBox.Image);
+                    Rectangle infoRect = new Rectangle(e.X, e.Y, 200, 50);
+                    g.FillRectangle(Brushes.White, infoRect);
+                    g.DrawRectangle(Pens.Black, infoRect);
+                    string info = "Id: " + polygon.Id + "\nNeighbors: ";
+                    foreach (Polygon n in polyExt.PolygonNeighbors[polygon.Id])
+                        info += n.Id + " ";
+                    g.DrawString(info, DefaultFont, Brushes.Black, e.X+ 5, e.Y + 5);
+                    mapBox.Invalidate();
+                }
             }
         }
 
