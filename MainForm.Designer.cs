@@ -51,13 +51,14 @@
             this.label3 = new System.Windows.Forms.Label();
             this.labelVertices = new System.Windows.Forms.Label();
             this.groupBoxDrawing = new System.Windows.Forms.GroupBox();
+            this.checkBoxInteractive = new System.Windows.Forms.CheckBox();
             this.buttonDrawPolygons = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonOriginal = new System.Windows.Forms.Button();
             this.buttonDrawSegments = new System.Windows.Forms.Button();
             this.buttonDrawVertices = new System.Windows.Forms.Button();
             this.buttonDrawPaths = new System.Windows.Forms.Button();
-            this.checkBoxInteractive = new System.Windows.Forms.CheckBox();
+            this.buttonExport = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -88,7 +89,7 @@
             this.splitContainer.Panel2.Controls.Add(this.groupBoxStats);
             this.splitContainer.Panel2.Controls.Add(this.groupBoxDrawing);
             this.splitContainer.Size = new System.Drawing.Size(1339, 746);
-            this.splitContainer.SplitterDistance = 1129;
+            this.splitContainer.SplitterDistance = 1125;
             this.splitContainer.SplitterWidth = 2;
             this.splitContainer.TabIndex = 0;
             // 
@@ -99,7 +100,7 @@
             this.panelScroll.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelScroll.Location = new System.Drawing.Point(0, 0);
             this.panelScroll.Name = "panelScroll";
-            this.panelScroll.Size = new System.Drawing.Size(1129, 746);
+            this.panelScroll.Size = new System.Drawing.Size(1125, 746);
             this.panelScroll.TabIndex = 1;
             // 
             // mapBox
@@ -302,6 +303,7 @@
             // 
             // groupBoxDrawing
             // 
+            this.groupBoxDrawing.Controls.Add(this.buttonExport);
             this.groupBoxDrawing.Controls.Add(this.checkBoxInteractive);
             this.groupBoxDrawing.Controls.Add(this.buttonDrawPolygons);
             this.groupBoxDrawing.Controls.Add(this.buttonSave);
@@ -315,6 +317,16 @@
             this.groupBoxDrawing.TabIndex = 17;
             this.groupBoxDrawing.TabStop = false;
             this.groupBoxDrawing.Text = "Drawing";
+            // 
+            // checkBoxInteractive
+            // 
+            this.checkBoxInteractive.AutoSize = true;
+            this.checkBoxInteractive.Location = new System.Drawing.Point(6, 200);
+            this.checkBoxInteractive.Name = "checkBoxInteractive";
+            this.checkBoxInteractive.Size = new System.Drawing.Size(99, 17);
+            this.checkBoxInteractive.TabIndex = 18;
+            this.checkBoxInteractive.Text = "Interactive map";
+            this.checkBoxInteractive.UseVisualStyleBackColor = true;
             // 
             // buttonDrawPolygons
             // 
@@ -376,15 +388,15 @@
             this.buttonDrawPaths.UseVisualStyleBackColor = true;
             this.buttonDrawPaths.Click += new System.EventHandler(this.buttonDrawPaths_Click);
             // 
-            // checkBoxInteractive
+            // buttonExport
             // 
-            this.checkBoxInteractive.AutoSize = true;
-            this.checkBoxInteractive.Location = new System.Drawing.Point(6, 200);
-            this.checkBoxInteractive.Name = "checkBoxInteractive";
-            this.checkBoxInteractive.Size = new System.Drawing.Size(99, 17);
-            this.checkBoxInteractive.TabIndex = 18;
-            this.checkBoxInteractive.Text = "Interactive map";
-            this.checkBoxInteractive.UseVisualStyleBackColor = true;
+            this.buttonExport.Location = new System.Drawing.Point(102, 196);
+            this.buttonExport.Name = "buttonExport";
+            this.buttonExport.Size = new System.Drawing.Size(92, 23);
+            this.buttonExport.TabIndex = 19;
+            this.buttonExport.Text = "Export JSON";
+            this.buttonExport.UseVisualStyleBackColor = true;
+            this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
             // 
             // MainForm
             // 
@@ -442,6 +454,7 @@
         private System.Windows.Forms.Label labelPolygons;
         private System.Windows.Forms.Button buttonDrawPolygons;
         private System.Windows.Forms.CheckBox checkBoxInteractive;
+        private System.Windows.Forms.Button buttonExport;
     }
 }
 

@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Edge.cs" />
     <Compile Include="HalfEdge.cs" />
+    <Compile Include="JsonExport.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Globalization;
 using System.Drawing.Drawing2D;
+using System.IO;
 
 namespace MapExtractor
 {
@@ -19,6 +20,7 @@ namespace MapExtractor
         private VertexExtractor vertExt;
         private PathExtractor pathExt;
         private PolygonExtractor polyExt;
+        private JsonExport jsonExport;
 
         private List<Point> points;
         private Dictionary<int, Point> pointMap;
@@ -185,6 +187,8 @@ namespace MapExtractor
             polygons = polyExt.ExtractPolygons();
             stopWatch.Stop();
             Log("Extracted polygons in " + stopWatch.ElapsedMilliseconds + "ms");
+
+            jsonExport = new JsonExport(polyExt, bmp);
             
             labelPoints.Text = points.Count.ToString();
             labelSegments.Text = segments.Count.ToString();
@@ -260,6 +264,20 @@ namespace MapExtractor
             {
                 Image img = Image.FromFile(openDialog.FileName);
                 LoadImage(img);
+            }
+        }
+
+        private void buttonExport_Click(object sender, EventArgs e)
+        {
+            if (jsonExport != null)
+            {
+                SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.Filter = "JSON File|*.json";
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string json = jsonExport.CreateJson();
+                    File.WriteAllText(saveDialog.FileName, json);
+                }
             }
         }
     }
