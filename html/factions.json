@@ -1,2 +1,20 @@
-{
+﻿{
+	"factions": [
+		{
+			"id": "travellers",
+			"name": "Travellers of the Windrose",
+			"color": "0,0,255",
+			"provinces": [2, 1, 16],
+			"vassals": [],
+			"regions": []
+		},
+		{
+			"id": "notreal",
+			"name": "Not a real faction",
+			"color": "255,0,255",
+			"provinces": [11, 19, 12],
+			"vassals": [],
+			"regions": []
+		}
+	]
 }
