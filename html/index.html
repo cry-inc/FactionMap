@@ -9,9 +9,10 @@
 	</head>
 	<body>
 		<div id="messagebox"></div>
-		<canvas id="map">
-			Your browser does not support the HTML5 canvas element. Please upgrade yout browser software!
-		</canvas>
+		<div id="drawstack">
+			<canvas id="baselayer"></canvas>
+			<canvas id="selectionlayer"></canvas>
+		</div>
 		<div id="footer">
 			<a href="map.json">Map data</a> | <a href="factions.json">Faction data</a>
 		</div>

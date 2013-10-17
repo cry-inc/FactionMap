@@ -1,17 +1,32 @@
-#map {
+#drawstack {
+	position: relative;
+	margin: 0px;
+	padding: 0px;
 	width: 700px;
 	height: 700px;
-	/*border: 1px solid black;*/
+}
+
+#baselayer {
+	position: absolute;
+	top: 0px;
+	left: 0px;
 	/*background-image: url(map.jpg);*/
 }
 
+#selectionlayer  {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
 #footer {
-	width: 800px;
+	width: 700px;
 	text-align: center;
 	font-weight: bold;
 }
 
 #infobox {
+	display: none;
 	position: absolute;
 	width: 200px;
 	height: 60px;
@@ -21,4 +36,8 @@
 	font-family: sans-serif;
 	font-size: 8pt;
 	background-color: #dddddd;
+}
+
+body {
+	overflow: hidden;
 }

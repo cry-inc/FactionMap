@@ -1,22 +1,25 @@
 $(document).ready( function(){ loadMapData(); } )
 
-var canvas;
-var ctx;
+var baseCanvas;
+var baseCtx;
+var selCanvas;
+var selCtx;
 var mapData;
 var factionData;
 
 function loadMapData()
 {
-	canvas = document.getElementById("map");
-	ctx = canvas.getContext("2d");
-	canvas.width = $(canvas).width();
-	canvas.height = $(canvas).height();
+	baseCanvas = document.getElementById("baselayer");
+	baseCtx = baseCanvas.getContext("2d");
+	selCanvas = document.getElementById("selectionlayer");
+	selCtx = selCanvas.getContext("2d");
+	baseCanvas.width = selCanvas.width = $("#drawstack").width();
+	baseCanvas.height = selCanvas.height = $("#drawstack").height();
 	$.getJSON("map.json", function(data) {
 		mapData = data;
 		preprocessMapData();
 		loadFactionData();
 	});
-	
 }
 
 function loadFactionData()
@@ -25,7 +28,7 @@ function loadFactionData()
 		factionData = data;
 		preprocessFactionData();
 		drawBorders();
-		$("#map").mousemove(onMouseOverMap);
+		$("#drawstack").mousemove(onMouseOverMap);
 	});
 }
 
@@ -45,13 +48,34 @@ function showInfoBox(visible, x, y, provinceId)
 		$("#infobox").css({display: "none"});
 }
 
+function highlightProvince(provinceId)
+{
+	selCtx.clearRect(0, 0, selCanvas.width, selCanvas.height);
+	if (provinceId != -1) {
+		var poly = mapData.polygons[provinceId];
+		selCtx.strokeStyle = "orange";
+		selCtx.lineWidth = 3;
+		var x = poly.points[0].x * selCanvas.width;
+		var y = poly.points[0].y * selCanvas.height;
+		selCtx.beginPath();
+		selCtx.moveTo(x, y);
+		for (var i = 1; i < poly.points.length; i++) {
+			x = poly.points[i].x * selCanvas.width;
+			y = poly.points[i].y * selCanvas.height;
+			selCtx.lineTo(x, y);
+		}
+		selCtx.closePath();
+		selCtx.stroke();
+	}
+}
+
 function onMouseOverMap(event)
 {
-	var ofs = $(canvas).offset();
+	var ofs = $("#drawstack").offset();
 	var rx = event.pageX - ofs.left;
 	var ry = event.pageY - ofs.top;
-	rx /= canvas.width;
-	ry /= canvas.height;
+	rx /= baseCanvas.width;
+	ry /= baseCanvas.height;
 	var point = {x: rx, y: ry};
 	var found = -1;
 	for (var i = 0; i < mapData.polygons.length; i++) {
@@ -61,35 +85,36 @@ function onMouseOverMap(event)
 		}
 	}
 	showInfoBox((found != -1), event.pageX, event.pageY, found);
+	highlightProvince(found);
 }
 
 function drawBorders()
 {
-	ctx.lineWidth = 0.5;
-	ctx.strokeStyle = "black";
+	baseCtx.lineWidth = 0.5;
+	baseCtx.strokeStyle = "black";
 	$.each(mapData.polygons, function(k, poly) {
-		var cx = poly.points[0].x * canvas.width;
-		var cy = poly.points[0].y * canvas.height;
-		ctx.beginPath();
-		ctx.moveTo(cx, cy);
+		var cx = poly.points[0].x * baseCanvas.width;
+		var cy = poly.points[0].y * baseCanvas.height;
+		baseCtx.beginPath();
+		baseCtx.moveTo(cx, cy);
 		for (var i = 1; i < poly.points.length; i++) {
-			var x = poly.points[i].x * canvas.width;
-			var y = poly.points[i].y * canvas.height;
+			var x = poly.points[i].x * baseCanvas.width;
+			var y = poly.points[i].y * baseCanvas.height;
 			cx += x;
 			cy += y;
-			ctx.lineTo(x, y);
+			baseCtx.lineTo(x, y);
 		}
-		ctx.closePath();
+		baseCtx.closePath();
 		if (poly.faction != -1) {
-			ctx.fillStyle = "rgba(" + factionData.factions[poly.faction].color + ", 0.5)";
-			ctx.fill();
+			baseCtx.fillStyle = "rgba(" + factionData.factions[poly.faction].color + ", 0.5)";
+			baseCtx.fill();
 		}
-		ctx.stroke();
+		baseCtx.stroke();
 		
 		cx /= poly.points.length;
 		cy /= poly.points.length;
-		ctx.fillStyle = "black";
-		ctx.fillText(poly.id, cx, cy);
+		baseCtx.fillStyle = "black";
+		//baseCtx.fillText(poly.id, cx, cy);
 	});
 }
 
