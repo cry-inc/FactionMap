@@ -27,7 +27,7 @@ function loadFactionData()
 	$.getJSON("factions.json", function(data) {
 		factionData = data;
 		preprocessFactionData();
-		drawBorders();
+		drawBaseMap();
 		$("#drawstack").mousemove(onMouseOverMap);
 	});
 }
@@ -37,9 +37,9 @@ function showInfoBox(visible, x, y, provinceId)
 	if (visible) {
 		$("#infobox").css({display: "block", left: x + 5, top: y + 5 });
 		var faction = "-";
-		if (mapData.polygons[provinceId].faction != -1)
-			faction = factionData.factions[mapData.polygons[provinceId].faction].name;
-		var msg = "Province number: " + provinceId + "<br />";
+		if (mapData.provinces[provinceId].faction != -1)
+			faction = factionData.factions[mapData.provinces[provinceId].faction].name;
+		var msg = "Province Id: " + provinceId + "<br />";
 		msg += "Faction: " + faction + "<br />";
 		msg += "Name: -<br />";
 		msg += "Region: -<br />";
@@ -52,16 +52,16 @@ function highlightProvince(provinceId)
 {
 	selCtx.clearRect(0, 0, selCanvas.width, selCanvas.height);
 	if (provinceId != -1) {
-		var poly = mapData.polygons[provinceId];
+		var province = mapData.provinces[provinceId];
 		selCtx.strokeStyle = "orange";
 		selCtx.lineWidth = 3;
-		var x = poly.points[0].x * selCanvas.width;
-		var y = poly.points[0].y * selCanvas.height;
+		var x = province.points[0].x * selCanvas.width;
+		var y = province.points[0].y * selCanvas.height;
 		selCtx.beginPath();
 		selCtx.moveTo(x, y);
-		for (var i = 1; i < poly.points.length; i++) {
-			x = poly.points[i].x * selCanvas.width;
-			y = poly.points[i].y * selCanvas.height;
+		for (var i = 1; i < province.points.length; i++) {
+			x = province.points[i].x * selCanvas.width;
+			y = province.points[i].y * selCanvas.height;
 			selCtx.lineTo(x, y);
 		}
 		selCtx.closePath();
@@ -78,9 +78,9 @@ function onMouseOverMap(event)
 	ry /= baseCanvas.height;
 	var point = {x: rx, y: ry};
 	var found = -1;
-	for (var i = 0; i < mapData.polygons.length; i++) {
-		if (pointInPolygon(point, mapData.polygons[i])) {
-			found = mapData.polygons[i].id;
+	for (var i = 0; i < mapData.provinces.length; i++) {
+		if (pointInProvince(point, mapData.provinces[i])) {
+			found = mapData.provinces[i].id;
 			break;
 		}
 	}
@@ -88,41 +88,34 @@ function onMouseOverMap(event)
 	highlightProvince(found);
 }
 
-function drawBorders()
+function drawBaseMap()
 {
 	baseCtx.lineWidth = 0.5;
 	baseCtx.strokeStyle = "black";
-	$.each(mapData.polygons, function(k, poly) {
-		var cx = poly.points[0].x * baseCanvas.width;
-		var cy = poly.points[0].y * baseCanvas.height;
+	$.each(mapData.provinces, function(k, province) {
+		var x = province.points[0].x * baseCanvas.width;
+		var y = province.points[0].y * baseCanvas.height;
 		baseCtx.beginPath();
-		baseCtx.moveTo(cx, cy);
-		for (var i = 1; i < poly.points.length; i++) {
-			var x = poly.points[i].x * baseCanvas.width;
-			var y = poly.points[i].y * baseCanvas.height;
-			cx += x;
-			cy += y;
+		baseCtx.moveTo(x, y);
+		for (var i = 1; i < province.points.length; i++) {
+			x = province.points[i].x * baseCanvas.width;
+			y = province.points[i].y * baseCanvas.height;
 			baseCtx.lineTo(x, y);
 		}
 		baseCtx.closePath();
-		if (poly.faction != -1) {
-			baseCtx.fillStyle = "rgba(" + factionData.factions[poly.faction].color + ", 0.5)";
+		if (province.faction != -1) {
+			baseCtx.fillStyle = "rgba(" + factionData.factions[province.faction].color + ", 0.5)";
 			baseCtx.fill();
 		}
 		baseCtx.stroke();
-		
-		cx /= poly.points.length;
-		cy /= poly.points.length;
-		baseCtx.fillStyle = "black";
-		//baseCtx.fillText(poly.id, cx, cy);
 	});
 }
 
-function pointInPolygon(pt, polygon)
+function pointInProvince(pt, province)
 {
 	var c = false;
-	if (pt.x >= polygon.xmin && pt.x <= polygon.xmax && pt.y >= polygon.ymin && pt.y <= polygon.ymax) {
-		var poly = polygon.points;
+	if (pt.x >= province.xmin && pt.x <= province.xmax && pt.y >= province.ymin && pt.y <= province.ymax) {
+		var poly = province.points;
 		for (var i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
 			((poly[i].y <= pt.y && pt.y < poly[j].y) || (poly[j].y <= pt.y && pt.y < poly[i].y))
 				&& (pt.x < (poly[j].x - poly[i].x) * (pt.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x)
@@ -133,9 +126,10 @@ function pointInPolygon(pt, polygon)
 
 function preprocessMapData()
 {
-	for (var i = 0; i < mapData.polygons.length; i++) {
-		mapData.polygons[i].faction = -1;
-		findBoundingBox(mapData.polygons[i]);
+	for (var i = 0; i < mapData.provinces.length; i++) {
+		mapData.provinces[i].faction = -1;
+		buildPoints(mapData.provinces[i]);
+		findBoundingBox(mapData.provinces[i]);
 	}
 }
 
@@ -144,9 +138,20 @@ function preprocessFactionData()
 	for (var i = 0; i < factionData.factions.length; i++) {
 		for (var j = 0; j < factionData.factions[i].provinces.length; j++) {
 			var pid = factionData.factions[i].provinces[j];
-			mapData.polygons[pid].faction = i;
+			mapData.provinces[pid].faction = i;
 		}
 	}
+}
+
+function buildPoints(p)
+{
+	var points = [];
+	for (var i=0; i<p.edges.length; i++) {
+		for (var j=0; j<p.edges[i].xpoints.length && j<p.edges[i].ypoints.length; j++) {
+			points.push({x: p.edges[i].xpoints[j], y: p.edges[i].ypoints[j]});
+		}
+	}
+	p.points = points;
 }
 
 function findBoundingBox(p)
@@ -161,4 +166,9 @@ function findBoundingBox(p)
 		if (p.points[i].x > p.xmax) p.xmax = p.points[i].x;
 		if (p.points[i].y > p.ymax) p.ymax = p.points[i].y;
 	}
+}
+
+function findCenter(p)
+{
+	p.center = {x: 0, y: 0};
 }
