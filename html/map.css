@@ -6,6 +6,14 @@
 	height: 700px;
 }
 
+#content {
+	padding: 5px;
+}
+
+#points {
+	display: none;
+}
+
 #baselayer {
 	position: absolute;
 	top: 0px;
@@ -19,25 +27,34 @@
 	left: 0px;
 }
 
-#footer {
+#footer, #header {
 	width: 700px;
 	text-align: center;
-	font-weight: bold;
+	padding-top: 10px;
 }
 
 #infobox {
 	display: none;
 	position: absolute;
 	width: 200px;
-	height: 60px;
+	height: 70px;
 	border: 1px solid black;
 	background-color: white;
 	padding: 5px;
-	font-family: sans-serif;
 	font-size: 8pt;
 	background-color: #dddddd;
 }
 
 body {
 	overflow: hidden;
+	font-family: sans-serif;
+}
+
+table {
+	border: 2px solid #dddddd;
+	width: 700px;
+}
+
+th {
+	background-color: #dddddd;
 }

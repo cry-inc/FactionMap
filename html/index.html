@@ -8,11 +8,32 @@
 		<script src="map.js" type="text/javascript"></script>
 	</head>
 	<body>
-		<div id="messagebox"></div>
-		<div id="drawstack">
-			<canvas id="baselayer"></canvas>
-			<canvas id="selectionlayer"></canvas>
+		<div id="header">
+			<a id="maplink" href="#">Map</a> | <a id="pointslink" href="#">Points</a>
 		</div>
+		<div id="content">
+			<div id="drawstack">
+				<canvas id="baselayer"></canvas>
+				<canvas id="selectionlayer"></canvas>
+			</div>
+			<div id="points">
+				<table>
+					<tr>
+						<th>Faction</th>
+						<th>Points</th>
+						<th>Provinces</th>
+						<th>Vassals</th>
+						<th>Land</th>
+					</tr>
+					<tr>
+						<td>Travellers</td>
+						<td>15</td>
+						<td>3</td>
+						<td>0</td>
+						<td>3%</td>
+					</tr>
+				</table>
+			</div>
 		<div id="footer">
 			<a href="map.json">Map data</a> | <a href="factions.json">Faction data</a>
 		</div>

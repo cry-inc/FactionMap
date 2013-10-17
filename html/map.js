@@ -15,6 +15,8 @@ function loadMapData()
 	selCtx = selCanvas.getContext("2d");
 	baseCanvas.width = selCanvas.width = $("#drawstack").width();
 	baseCanvas.height = selCanvas.height = $("#drawstack").height();
+	$("#maplink").click(showMap);
+	$("#pointslink").click(showPoints);
 	$.getJSON("map.json", function(data) {
 		mapData = data;
 		preprocessMapData();
@@ -36,13 +38,14 @@ function showInfoBox(visible, x, y, provinceId)
 {
 	if (visible) {
 		$("#infobox").css({display: "block", left: x + 5, top: y + 5 });
-		var faction = "-";
-		if (mapData.provinces[provinceId].faction != -1)
-			faction = factionData.factions[mapData.provinces[provinceId].faction].name;
 		var msg = "Province Id: " + provinceId + "<br />";
-		msg += "Faction: " + faction + "<br />";
-		msg += "Name: -<br />";
-		msg += "Region: -<br />";
+		if (mapData.provinces[provinceId].faction != -1) {
+			faction = factionData.factions[mapData.provinces[provinceId].faction].name;
+			msg += "Faction: " + faction + "<br />";
+			msg += "Name: " + mapData.provinces[provinceId].name + "<br />";
+			msg += "Heartland: " + mapData.provinces[provinceId].heartland + "<br />";
+			msg += "Region: -<br />";
+		}
 		$("#infobox").html(msg);
 	} else
 		$("#infobox").css({display: "none"});
@@ -90,6 +93,12 @@ function onMouseOverMap(event)
 
 function drawBaseMap()
 {
+	drawProvinces();
+	//drawRegionBorders();
+}
+
+function drawProvinces()
+{
 	baseCtx.lineWidth = 0.5;
 	baseCtx.strokeStyle = "black";
 	$.each(mapData.provinces, function(k, province) {
@@ -104,10 +113,31 @@ function drawBaseMap()
 		}
 		baseCtx.closePath();
 		if (province.faction != -1) {
-			baseCtx.fillStyle = "rgba(" + factionData.factions[province.faction].color + ", 0.5)";
+			var opacity = "0.4";
+			if (province.heartland)
+				opacity = "0.5";
+			baseCtx.fillStyle = "rgba(" + factionData.factions[province.faction].color + ", " + opacity + ")";
 			baseCtx.fill();
 		}
 		baseCtx.stroke();
+	});
+}
+
+function drawRegionBorders()
+{
+	// TODO: fix!
+	$.each(factionData.factions, function(f, faction) {
+		$.each(faction.regions, function(r, region) {
+			var edges = [];
+			$.each(region.provinces, function(p, province) {
+				$.each(mapData.provinces[province].edges, function(e, edge) {
+					if (!$.inArray(edge.neighbor, region.provinces)) {
+						edges.push(edge.points);
+					}
+				});
+			});
+			// draw all paths in edges with thickness 2 in black
+		});
 	});
 }
 
@@ -126,6 +156,9 @@ function pointInProvince(pt, province)
 
 function preprocessMapData()
 {
+	// Set faction id of provinces to neutral,
+	// Merge edges to one large polygon
+	// Find bounding box of provinces
 	for (var i = 0; i < mapData.provinces.length; i++) {
 		mapData.provinces[i].faction = -1;
 		buildPoints(mapData.provinces[i]);
@@ -135,23 +168,43 @@ function preprocessMapData()
 
 function preprocessFactionData()
 {
+	// Mark provinces in mapData with faction ids and name
 	for (var i = 0; i < factionData.factions.length; i++) {
 		for (var j = 0; j < factionData.factions[i].provinces.length; j++) {
-			var pid = factionData.factions[i].provinces[j];
+			var pid = factionData.factions[i].provinces[j].id;
 			mapData.provinces[pid].faction = i;
+			mapData.provinces[pid].name = factionData.factions[i].provinces[j].name;
+		}
+	}
+	
+	// Check provinces for heartland
+	for (var i = 0; i < mapData.provinces.length; i++) {
+		mapData.provinces[i].heartland = false;
+		if (mapData.provinces[i].faction != -1) {
+			mapData.provinces[i].heartland = true;
+			for (var j = 0; j < mapData.provinces[i].edges.length; j++) {
+				var neighborId = mapData.provinces[i].edges[j].neighbor;
+				if (mapData.provinces[neighborId].faction == -1 ||
+					mapData.provinces[neighborId].faction != mapData.provinces[i].faction) {
+					mapData.provinces[i].heartland = false;
+					break;
+				}
+			}
 		}
 	}
 }
 
 function buildPoints(p)
 {
-	var points = [];
+	p.points = [];
 	for (var i=0; i<p.edges.length; i++) {
+		p.edges[i].points = [];
 		for (var j=0; j<p.edges[i].xpoints.length && j<p.edges[i].ypoints.length; j++) {
-			points.push({x: p.edges[i].xpoints[j], y: p.edges[i].ypoints[j]});
+			var point = {x: p.edges[i].xpoints[j], y: p.edges[i].ypoints[j]};
+			p.points.push(point);
+			p.edges[i].points.push(point);
 		}
 	}
-	p.points = points;
 }
 
 function findBoundingBox(p)
@@ -171,4 +224,16 @@ function findBoundingBox(p)
 function findCenter(p)
 {
 	p.center = {x: 0, y: 0};
+}
+
+function showMap()
+{
+	$("#drawstack").css({display: "block"});
+	$("#points").css({display: "none"});
+}
+
+function showPoints()
+{
+	$("#drawstack").css({display: "none"});
+	$("#points").css({display: "block"});
 }

@@ -4,17 +4,19 @@
 			"id": "travellers",
 			"name": "Travellers of the Windrose",
 			"color": "0,0,255",
-			"provinces": [2, 1, 16],
-			"vassals": [],
-			"regions": []
+			"provinces": [ {"id": 2, "name": "P1"}, {"id": 1, "name": "P2"}, {"id": 16, "name": "P3"} ],
+			"vassals": [ "notreal" ],
+			"regions": [ ]
 		},
 		{
 			"id": "notreal",
 			"name": "Not a real faction",
 			"color": "255,0,255",
-			"provinces": [11, 19, 12],
+			"provinces": [	{"id": 11, "name": "P1"}, {"id": 19, "name": "P2"}, {"id": 12, "name": "P3"},
+							{"id": 32, "name": "P4"}, {"id": 37, "name": "P5"}, {"id": 38, "name": "P6"},
+							{"id": 39, "name": "P7"}, {"id": 20, "name": "P8"}, {"id": 36, "name": "P9"} ],
 			"vassals": [],
-			"regions": []
+			"regions": [ { "name": "R1", "provinces": [32, 37] } ]
 		}
 	]
 }
