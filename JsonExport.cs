@@ -19,33 +19,41 @@ namespace MapExtractor
 
         public string CreateJson()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("{");
-            sb.AppendLine("\t\"polygons\": [");
-            for (int i = 0; i < pe.Polygons.Count; i++)
+            List<string> polygonStrings = new List<string>();
+            foreach (Polygon p in pe.Polygons)
+                polygonStrings.Add(CreatePolygonString(p));
+            return "{\"provinces\":[" + String.Join(",", polygonStrings) + "]}\n";
+        }
+
+        private string CreatePolygonString(Polygon p)
+        {
+            List<string> edgeStrings = new List<string>();
+            foreach (HalfEdge he in p.HalfEdges)
+                edgeStrings.Add(CreateHalfEdgeString(he, p));
+            return "{\"id\": " + p.Id + ", \"edges\": [" + String.Join(",", edgeStrings) + "]}";
+        }
+
+        private string CreateHalfEdgeString(HalfEdge he, Polygon p)
+        {
+            long edgeKey = pe.GetEdgeKey(he.Edge);
+            Polygon neighbor = null;
+            foreach (Polygon candidate in pe.EdgePolygons[edgeKey])
+                if (candidate != p)
+                    neighbor = candidate;
+            string neighborStr = (neighbor != null) ? neighbor.Id.ToString() : "-1";
+
+            List<string> xp = new List<string>();
+            List<string> yp = new List<string>();
+            Point[] points = he.GetPoints();
+            foreach (Point op in points)
             {
-                Polygon p = pe.Polygons[i];
-                sb.AppendLine("\t\t{");
-                sb.AppendLine("\t\t\t\"id\": " + p.Id + ",");
-                List<string> strPoints = new List<string>();
-                foreach (Point op in p.Points)
-                {
-                    PointF cp = ConvertPoint(op);
-                    strPoints.Add("{\"x\": " + cp.X.ToString(CultureInfo.InvariantCulture) + ", \"y\": " + cp.Y.ToString(CultureInfo.InvariantCulture) + "}");
-                }
-                sb.AppendLine("\t\t\t\"points\": [" + String.Join(", ", strPoints.ToArray()) + "],");
-                List<string> strNeighbors = new List<string>();
-                foreach (Polygon n in pe.PolygonNeighbors[p.Id])
-                    strNeighbors.Add(n.Id.ToString());
-                sb.AppendLine("\t\t\t\"neighbors\": [" + String.Join(", ", strNeighbors.ToArray()) + "]");
-                sb.Append("\t\t}");
-                if (i != pe.Polygons.Count - 1)
-                    sb.Append(",");
-                sb.AppendLine();
+                PointF cp = ConvertPoint(op);
+                xp.Add(cp.X.ToString(CultureInfo.InvariantCulture));
+                yp.Add(cp.Y.ToString(CultureInfo.InvariantCulture));
             }
-            sb.AppendLine("\t]");
-            sb.AppendLine("}");
-            return sb.ToString();
+            string xPoints = String.Join(",", xp);
+            string yPoints = String.Join(",", yp);
+            return "{\"neighbor\": " + neighborStr + ", \"xpoints\": [" + xPoints + "], \"ypoints\": [" + yPoints + "]}";
         }
 
         private PointF ConvertPoint(PointF org)
