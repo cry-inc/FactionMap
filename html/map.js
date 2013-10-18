@@ -42,12 +42,15 @@ function showInfoBox(visible, screenx, screeny, provinceId)
 		var province = mapData.provinces[provinceId];
 		var msg = "Id: " + provinceId + ", Area: " + areaToString(province.area) + "<br />";
 		if (province.faction != -1) {
+			var faction = factionData.factions[province.faction];
 			msg += "Name: " + province.name + "<br />";
-			msg += "Faction: " + province.factionname + "<br />";
+			msg += "Faction: " + faction.name + "<br />";
 			if (province.heartland)
 				msg += "Heartland!<br />";
 			if (province.region != -1)
 				msg += "Region: " + province.regionname + "<br />";
+			if (faction.vassalof != -1)
+				msg += "Vassals of: " + factionData.factions[faction.vassalof].name + "<br />";
 		}
 		$("#infobox").html(msg);
 	} else
@@ -130,6 +133,17 @@ function drawProvinces()
 			if (province.heartland) opacity = "0.5";
 			baseCtx.fillStyle = "rgba(" + factionData.factions[province.faction].color + ", " + opacity + ")";
 			baseCtx.fill();
+			var vassalof = factionData.factions[province.faction].vassalof;
+			if (vassalof != -1) {
+				var img = document.createElement('canvas');
+				img.width = 10; img.height = 10;
+				var imgctx = img.getContext("2d");
+				imgctx.fillStyle = "rgba(" + factionData.factions[vassalof].color + ", 0.2)";
+				imgctx.fillRect(0, 0, 5, 2);
+				var pattern = baseCtx.createPattern(img, "repeat");
+				baseCtx.fillStyle = pattern;
+				baseCtx.fill();
+			}
 		}
 		baseCtx.stroke();
 	});
@@ -188,7 +202,6 @@ function preprocessMapData()
 		
 		// Set faction and regions of provinces to neutral
 		mapData.provinces[i].faction = -1;
-		mapData.provinces[i].factionname = "";
 		mapData.provinces[i].region = -1;
 		mapData.provinces[i].regionname = "";
 		
@@ -206,14 +219,13 @@ function preprocessMapData()
 function preprocessFactionData()
 {
 	// Mark provinces in mapData with name + faction info and extract regions
-	// and replace vassal id with correct number
 	mapData.regions = [];
 	for (var f = 0; f < factionData.factions.length; f++) {
+		factionData.factions[f].vassalof = -1;
 		for (var p = 0; p < factionData.factions[f].provinces.length; p++) {
 			var pid = factionData.factions[f].provinces[p].id;
 			mapData.provinces[pid].name = factionData.factions[f].provinces[p].name;
 			mapData.provinces[pid].faction = f;
-			mapData.provinces[pid].factionname = factionData.factions[f].name;
 		}
 		for (var r = 0; r < factionData.factions[f].regions.length; r++) {
 			factionData.factions[f].regions[r].faction = f;
@@ -224,10 +236,16 @@ function preprocessFactionData()
 				mapData.provinces[pid].regionname = factionData.factions[f].regions[r].name;
 			}
 		}
+		
+	}
+	
+	// Replace vassal id with correct number and set faction.vassalof
+	for (var f = 0; f < factionData.factions.length; f++) {
 		for (var v = 0; v < factionData.factions[f].vassals.length; v++) {
 			var vshort = factionData.factions[f].vassals[v];
 			var vid = findFactionId(vshort);
 			factionData.factions[f].vassals[v] = vid;
+			factionData.factions[vid].vassalof = f;
 		}
 	}
 	
