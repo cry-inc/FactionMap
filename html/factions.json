@@ -16,7 +16,7 @@
 							{"id": 32, "name": "P4"}, {"id": 37, "name": "P5"}, {"id": 38, "name": "P6"},
 							{"id": 39, "name": "P7"}, {"id": 20, "name": "P8"}, {"id": 36, "name": "P9"} ],
 			"vassals": [],
-			"regions": [ { "name": "R1", "provinces": [32, 37] } ]
+			"regions": [ { "name": "R1", "provinces": [32, 37, 39] } ]
 		}
 	]
 }

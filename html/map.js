@@ -39,12 +39,14 @@ function showInfoBox(visible, x, y, provinceId)
 	if (visible) {
 		$("#infobox").css({display: "block", left: x + 5, top: y + 5 });
 		var msg = "Province Id: " + provinceId + "<br />";
-		if (mapData.provinces[provinceId].faction != -1) {
-			faction = factionData.factions[mapData.provinces[provinceId].faction].name;
-			msg += "Faction: " + faction + "<br />";
-			msg += "Name: " + mapData.provinces[provinceId].name + "<br />";
-			msg += "Heartland: " + mapData.provinces[provinceId].heartland + "<br />";
-			msg += "Region: -<br />";
+		var province = mapData.provinces[provinceId];
+		if (province.faction != -1) {
+			msg += "Name: " + province.name + "<br />";
+			msg += "Faction: " + province.factionname + "<br />";
+			if (province.heartland)
+				msg += "Heartland!<br />";
+			if (province.region != -1)
+				msg += "Region: " + province.regionname + "<br />";
 		}
 		$("#infobox").html(msg);
 	} else
@@ -94,7 +96,7 @@ function onMouseOverMap(event)
 function drawBaseMap()
 {
 	drawProvinces();
-	//drawRegionBorders();
+	drawRegionBorders();
 }
 
 function drawProvinces()
@@ -114,8 +116,7 @@ function drawProvinces()
 		baseCtx.closePath();
 		if (province.faction != -1) {
 			var opacity = "0.4";
-			if (province.heartland)
-				opacity = "0.5";
+			if (province.heartland) opacity = "0.5";
 			baseCtx.fillStyle = "rgba(" + factionData.factions[province.faction].color + ", " + opacity + ")";
 			baseCtx.fill();
 		}
@@ -125,20 +126,24 @@ function drawProvinces()
 
 function drawRegionBorders()
 {
-	// TODO: fix!
-	$.each(factionData.factions, function(f, faction) {
-		$.each(faction.regions, function(r, region) {
-			var edges = [];
-			$.each(region.provinces, function(p, province) {
-				$.each(mapData.provinces[province].edges, function(e, edge) {
-					if (!$.inArray(edge.neighbor, region.provinces)) {
-						edges.push(edge.points);
-					}
-				});
-			});
-			// draw all paths in edges with thickness 2 in black
-		});
-	});
+	baseCtx.lineWidth = 2;
+	baseCtx.strokeStyle = "black";
+	for (var r = 0; r < mapData.regions.length; r++) {
+		var region = mapData.regions[r];
+		for (var e = 0; e < mapData.regions[r].edges.length; e++) {
+			var edge = mapData.regions[r].edges[e];
+			var x = edge.points[0].x * baseCanvas.width;
+			var y = edge.points[0].y * baseCanvas.height;
+			baseCtx.beginPath();
+			baseCtx.moveTo(x, y);
+			for (var p=1; p<edge.points.length; p++) {
+				x = edge.points[p].x * baseCanvas.width;
+				y = edge.points[p].y * baseCanvas.height;
+				baseCtx.lineTo(x, y);
+			}
+			baseCtx.stroke();
+		}
+	}
 }
 
 function pointInProvince(pt, province)
@@ -156,24 +161,41 @@ function pointInProvince(pt, province)
 
 function preprocessMapData()
 {
-	// Set faction id of provinces to neutral,
-	// Merge edges to one large polygon
-	// Find bounding box of provinces
 	for (var i = 0; i < mapData.provinces.length; i++) {
+		
+		// Set faction and regions of provinces to neutral
 		mapData.provinces[i].faction = -1;
+		mapData.provinces[i].factionname = "";
+		mapData.provinces[i].region = -1;
+		mapData.provinces[i].regionname = "";
+		
+		// Merge edges to one large polygon
 		buildPoints(mapData.provinces[i]);
+		
+		// Find bounding box of provinces
 		findBoundingBox(mapData.provinces[i]);
 	}
 }
 
 function preprocessFactionData()
 {
-	// Mark provinces in mapData with faction ids and name
-	for (var i = 0; i < factionData.factions.length; i++) {
-		for (var j = 0; j < factionData.factions[i].provinces.length; j++) {
-			var pid = factionData.factions[i].provinces[j].id;
-			mapData.provinces[pid].faction = i;
-			mapData.provinces[pid].name = factionData.factions[i].provinces[j].name;
+	// Mark provinces in mapData with name + faction info and extract regions
+	mapData.regions = [];
+	for (var f = 0; f < factionData.factions.length; f++) {
+		for (var p = 0; p < factionData.factions[f].provinces.length; p++) {
+			var pid = factionData.factions[f].provinces[p].id;
+			mapData.provinces[pid].name = factionData.factions[f].provinces[p].name;
+			mapData.provinces[pid].faction = f;
+			mapData.provinces[pid].factionname = factionData.factions[f].name;
+		}
+		for (var r = 0; r < factionData.factions[f].regions.length; r++) {
+			factionData.factions[f].regions[r].faction = f;
+			mapData.regions.push(factionData.factions[f].regions[r]);
+			for (var p = 0; p < factionData.factions[f].regions[r].provinces.length; p++) {
+				var pid = factionData.factions[f].regions[r].provinces[p];
+				mapData.provinces[pid].region = mapData.regions.length - 1;
+				mapData.provinces[pid].regionname = factionData.factions[f].regions[r].name;
+			}
 		}
 	}
 	
@@ -192,6 +214,28 @@ function preprocessFactionData()
 			}
 		}
 	}
+	
+	// Find borders of all regions for drawing
+	for (var r = 0; r < mapData.regions.length; r++) {
+		mapData.regions[r].edges = [];
+		for (var p = 0; p < mapData.regions[r].provinces.length; p++) {
+			var pid = mapData.regions[r].provinces[p];
+			var edges = mapData.provinces[pid].edges;
+			for (var e = 0; e < edges.length; e++) {
+				if (!isInList(edges[e].neighbor, mapData.regions[r].provinces)) {
+					mapData.regions[r].edges.push(edges[e]);
+				}
+			}
+		}
+	}
+}
+
+function isInList(item, list)
+{
+	for (var i=0; i<list.length; i++) {
+		if (item == list[i]) return true;
+	}
+	return false;
 }
 
 function buildPoints(p)
