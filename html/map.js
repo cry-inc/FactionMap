@@ -31,6 +31,7 @@ function loadFactionData()
 		preprocessFactionData();
 		drawBaseMap();
 		$("#drawstack").mousemove(onMouseOverMap);
+		createPointsTable();
 	});
 }
 
@@ -39,8 +40,7 @@ function showInfoBox(visible, screenx, screeny, provinceId)
 	if (visible) {
 		$("#infobox").css({display: "block", left: screenx + 5, top: screeny + 5 });
 		var province = mapData.provinces[provinceId];
-		var area = Math.round(province.area * 10000) / 100;
-		var msg = "Id: " + provinceId + ", Area: " + area + "%<br />";
+		var msg = "Id: " + provinceId + ", Area: " + areaToString(province.area) + "<br />";
 		if (province.faction != -1) {
 			msg += "Name: " + province.name + "<br />";
 			msg += "Faction: " + province.factionname + "<br />";
@@ -206,6 +206,7 @@ function preprocessMapData()
 function preprocessFactionData()
 {
 	// Mark provinces in mapData with name + faction info and extract regions
+	// and replace vassal id with correct number
 	mapData.regions = [];
 	for (var f = 0; f < factionData.factions.length; f++) {
 		for (var p = 0; p < factionData.factions[f].provinces.length; p++) {
@@ -222,6 +223,11 @@ function preprocessFactionData()
 				mapData.provinces[pid].region = mapData.regions.length - 1;
 				mapData.provinces[pid].regionname = factionData.factions[f].regions[r].name;
 			}
+		}
+		for (var v = 0; v < factionData.factions[f].vassals.length; v++) {
+			var vshort = factionData.factions[f].vassals[v];
+			var vid = findFactionId(vshort);
+			factionData.factions[f].vassals[v] = vid;
 		}
 	}
 	
@@ -253,6 +259,11 @@ function preprocessFactionData()
 				}
 			}
 		}
+	}
+	
+	// Calculate points and areas of factions
+	for (var f = 0; f < factionData.factions.length; f++) {
+		calculatePointsAndArea(f);
 	}
 }
 
@@ -291,9 +302,58 @@ function findBoundingBox(p)
 	}
 }
 
-function findCenter(p)
+function findFactionId(shortname)
 {
-	p.center = {x: 0, y: 0};
+	for (var f = 0; f < factionData.factions.length; f++) {
+		if (shortname == factionData.factions[f].id) {
+			return f;
+		}
+	}
+	return -1;
+}
+
+function calculatePointsAndArea(factionid)
+{
+	var faction = factionData.factions[factionid];
+	faction.area = 0;
+	faction.points = 0;
+	faction.points += faction.provinces.length * 10;
+	faction.points += faction.regions.length * 50;
+	for (var p=0; p<faction.provinces.length; p++) {
+		var pid = faction.provinces[p].id;
+		faction.area += mapData.provinces[pid].area;
+		if (mapData.provinces[pid].heartland)
+			faction.points += 5;
+	}
+	for (var v=0; v<faction.vassals.length; v++) {
+		var vid = faction.vassals[v];
+		faction.points += 5 * factionData.factions[vid].provinces.length;
+	}
+}
+function areaToString(area)
+{
+	return (Math.round(area * 10000) / 100) + "%";
+}
+
+function createTableRow(factionid)
+{
+	var faction = factionData.factions[factionid];
+	var html = "<tr>";
+	html += "<td>" + faction.name + "</td>";
+	html += "<td>" + faction.points + "</td>";
+	html += "<td>" + faction.provinces.length + "</td>";
+	html += "<td>" + faction.regions.length + "</td>";
+	html += "<td>" + faction.vassals.length + "</td>";
+	html += "<td>" + areaToString(faction.area) + "</td>";
+	return html + "</tr>";
+}
+
+function createPointsTable()
+{
+	var html = "";
+	for (var f=0; f<factionData.factions.length; f++)
+		html += createTableRow(f);
+	$("#tablebody").html(html);
 }
 
 function showMap()
