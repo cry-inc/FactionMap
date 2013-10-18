@@ -38,8 +38,9 @@ function showInfoBox(visible, x, y, provinceId)
 {
 	if (visible) {
 		$("#infobox").css({display: "block", left: x + 5, top: y + 5 });
-		var msg = "Province Id: " + provinceId + "<br />";
 		var province = mapData.provinces[provinceId];
+		var area = Math.round(province.area * 10000) / 100;
+		var msg = "Id: " + provinceId + ", Area: " + area + "%<br />";
 		if (province.faction != -1) {
 			msg += "Name: " + province.name + "<br />";
 			msg += "Faction: " + province.factionname + "<br />";
@@ -159,6 +160,18 @@ function pointInProvince(pt, province)
 	return c;
 }
 
+function provinceArea(province)
+{
+	var a1 = 0, a2 = 0;
+	for (var p=0; p<province.points.length-1; p++) {
+		a1 += province.points[p].x * province.points[p+1].y;
+		a2 += province.points[p].y * province.points[p+1].x;
+	}
+	a1 += province.points[province.points.length-1].x * province.points[0].y;
+	a2 += province.points[province.points.length-1].y * province.points[0].x;
+	province.area = (a1 - a2) / 2;
+}
+
 function preprocessMapData()
 {
 	for (var i = 0; i < mapData.provinces.length; i++) {
@@ -174,6 +187,9 @@ function preprocessMapData()
 		
 		// Find bounding box of provinces
 		findBoundingBox(mapData.provinces[i]);
+		
+		// Calculate area of province
+		provinceArea(mapData.provinces[i]);
 	}
 }
 
