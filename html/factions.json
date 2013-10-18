@@ -1,4 +1,11 @@
 ﻿{
+	"refpoints": {
+		"topleftx": -4200,
+		"toplefty": -4200,
+		"bottomrightx": 4200,
+		"bottomrighty": 4200
+	},
+	
 	"factions": [
 		{
 			"id": "travellers",

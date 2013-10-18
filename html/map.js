@@ -34,10 +34,10 @@ function loadFactionData()
 	});
 }
 
-function showInfoBox(visible, x, y, provinceId)
+function showInfoBox(visible, screenx, screeny, provinceId)
 {
 	if (visible) {
-		$("#infobox").css({display: "block", left: x + 5, top: y + 5 });
+		$("#infobox").css({display: "block", left: screenx + 5, top: screeny + 5 });
 		var province = mapData.provinces[provinceId];
 		var area = Math.round(province.area * 10000) / 100;
 		var msg = "Id: " + provinceId + ", Area: " + area + "%<br />";
@@ -92,6 +92,16 @@ function onMouseOverMap(event)
 	}
 	showInfoBox((found != -1), event.pageX, event.pageY, found);
 	highlightProvince(found);
+	showCoords(point);
+}
+
+function showCoords(point)
+{
+	var xd = factionData.refpoints.bottomrightx - factionData.refpoints.topleftx;
+	var yd = factionData.refpoints.toplefty - factionData.refpoints.bottomrighty;
+	var x = factionData.refpoints.topleftx + point.x * xd;
+	var y = factionData.refpoints.toplefty - point.y * yd;
+	$("#coords").html(Math.round(x) + "|" + Math.round(y));
 }
 
 function drawBaseMap()

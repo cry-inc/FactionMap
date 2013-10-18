@@ -45,6 +45,13 @@
 	background-color: #dddddd;
 }
 
+#coords {
+	width: 700px;
+	height: 20;
+	text-align: center;
+	font-weight: bold;
+}
+
 body {
 	overflow: hidden;
 	font-family: sans-serif;
