@@ -111,6 +111,7 @@ function drawBaseMap()
 {
 	drawProvinces();
 	drawRegionBorders();
+	drawFactionBorders();
 }
 
 function drawProvinces()
@@ -133,6 +134,7 @@ function drawProvinces()
 			if (province.heartland) opacity = "0.5";
 			baseCtx.fillStyle = "rgba(" + factionData.factions[province.faction].color + ", " + opacity + ")";
 			baseCtx.fill();
+			/*
 			var vassalof = factionData.factions[province.faction].vassalof;
 			if (vassalof != -1) {
 				var img = document.createElement('canvas');
@@ -144,6 +146,7 @@ function drawProvinces()
 				baseCtx.fillStyle = pattern;
 				baseCtx.fill();
 			}
+			*/
 		}
 		baseCtx.stroke();
 	});
@@ -155,8 +158,8 @@ function drawRegionBorders()
 	baseCtx.strokeStyle = "black";
 	for (var r = 0; r < mapData.regions.length; r++) {
 		var region = mapData.regions[r];
-		for (var e = 0; e < mapData.regions[r].edges.length; e++) {
-			var edge = mapData.regions[r].edges[e];
+		for (var e = 0; e < region.edges.length; e++) {
+			var edge = region.edges[e];
 			var x = edge.points[0].x * baseCanvas.width;
 			var y = edge.points[0].y * baseCanvas.height;
 			baseCtx.beginPath();
@@ -167,6 +170,33 @@ function drawRegionBorders()
 				baseCtx.lineTo(x, y);
 			}
 			baseCtx.stroke();
+		}
+	}
+}
+
+function drawFactionBorders()
+{
+	baseCtx.lineWidth = 3;
+	for (var f = 0; f < factionData.factions.length; f++) {
+		var faction = factionData.factions[f];
+		var factionId = f;
+		if (faction.vassalof != -1) {
+			factionId = faction.vassalof
+			var color = factionData.factions[factionId].color;
+			baseCtx.strokeStyle = "rgba(" + color + ", 0.5)";
+			for (var e = 0; e < faction.edges.length; e++) {
+				var edge = faction.edges[e];
+				var x = edge.points[0].x * baseCanvas.width;
+				var y = edge.points[0].y * baseCanvas.height;
+				baseCtx.beginPath();
+				baseCtx.moveTo(x, y);
+				for (var p=1; p<edge.points.length; p++) {
+					x = edge.points[p].x * baseCanvas.width;
+					y = edge.points[p].y * baseCanvas.height;
+					baseCtx.lineTo(x, y);
+				}
+				baseCtx.stroke();
+			}
 		}
 	}
 }
@@ -222,6 +252,7 @@ function preprocessFactionData()
 	mapData.regions = [];
 	for (var f = 0; f < factionData.factions.length; f++) {
 		factionData.factions[f].vassalof = -1;
+		factionData.factions[f].edges = [];
 		for (var p = 0; p < factionData.factions[f].provinces.length; p++) {
 			var pid = factionData.factions[f].provinces[p].id;
 			mapData.provinces[pid].name = factionData.factions[f].provinces[p].name;
@@ -274,6 +305,25 @@ function preprocessFactionData()
 			for (var e = 0; e < edges.length; e++) {
 				if (!isInList(edges[e].neighbor, mapData.regions[r].provinces)) {
 					mapData.regions[r].edges.push(edges[e]);
+				}
+			}
+		}
+	}
+	
+	// Find borders of all factions for drawing
+	for (var p = 0; p < mapData.provinces.length; p++) {
+		var province = mapData.provinces[p];
+		if (province.faction != -1) {
+			var faction = province.faction;
+			for (var e = 0; e < province.edges.length; e++) {
+				var edge = province.edges[e];
+				if (edge.neighbor == -1) {
+					factionData.factions[faction].edges.push(edge);
+				} else {
+					var nf = mapData.provinces[edge.neighbor].faction;
+					if (nf != faction) {
+						factionData.factions[faction].edges.push(edge);
+					}
 				}
 			}
 		}
