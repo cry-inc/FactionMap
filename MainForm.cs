@@ -71,7 +71,10 @@ namespace MapExtractor
                 Bitmap copy = new Bitmap(mapBox.Image);
                 Graphics g = Graphics.FromImage(copy);
                 foreach (Vertex v in vertices)
+                {
                     g.FillRectangle(Brushes.Green, new Rectangle(v.Point.X - 2, v.Point.Y - 2, 4, 4));
+                    g.DrawString(v.Point.ToString(), DefaultFont, Brushes.Green, v.Point);
+                }
                 mapBox.Image = copy;
             }
         }

@@ -167,7 +167,7 @@ namespace MapExtractor
                     neighbors.Add(ve.Vertices[i]);
                     MergeVertices(neighbors);
                     i = -1;
-                    collapsed++;
+                    collapsed += neighbors.Count;
                 }
             }
             return collapsed;
@@ -245,17 +245,17 @@ namespace MapExtractor
                 else if (foundV1)
                 {
                     if (paths[i].Points[0] == paths[i].V1.Point)
-                        paths[i].Points.Insert(0, newVertex.Point);
+                        paths[i].Points[0] = newVertex.Point;
                     else
-                        paths[i].Points.Add(newVertex.Point);
+                        paths[i].Points[paths[i].Points.Count - 1] = newVertex.Point;
                     paths[i].V1 = newVertex;
                 }
                 else if (foundV2)
                 {
                     if (paths[i].Points[0] == paths[i].V2.Point)
-                        paths[i].Points.Insert(0, newVertex.Point);
+                        paths[i].Points[0] = newVertex.Point;
                     else
-                        paths[i].Points.Add(newVertex.Point);
+                        paths[i].Points[paths[i].Points.Count - 1] = newVertex.Point;
                     paths[i].V2 = newVertex;
                 }
             }
