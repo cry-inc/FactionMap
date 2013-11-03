@@ -1,11 +1,4 @@
 ﻿{
-	"refpoints": {
-		"topleftx": -4200,
-		"toplefty": -4200,
-		"bottomrightx": 4200,
-		"bottomrighty": 4200
-	},
-	
 	"factions": [
 		{
 			"id": "travellers",
@@ -21,9 +14,10 @@
 			"color": "255,0,255",
 			"provinces": [	{"id": 11, "name": "P1"}, {"id": 19, "name": "P2"}, {"id": 12, "name": "P3"},
 							{"id": 32, "name": "P4"}, {"id": 37, "name": "P5"}, {"id": 38, "name": "P6"},
-							{"id": 39, "name": "P7"}, {"id": 20, "name": "P8"}, {"id": 36, "name": "P9"} ],
+							{"id": 40, "name": "P7"}, {"id": 20, "name": "P8"}, {"id": 36, "name": "P9"},
+							{"id": 77, "name": "P10"} ],
 			"vassals": [],
-			"regions": [ { "name": "R1", "provinces": [32, 37, 39] } ]
+			"regions": [ { "name": "R1", "provinces": [32, 37, 40] } ]
 		}
 	]
 }
