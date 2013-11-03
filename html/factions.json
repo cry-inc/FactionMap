@@ -2,6 +2,7 @@
 	"factions": [
 		{
 			"id": "travellers",
+			"image": "traveller.png",
 			"name": "Travellers of the Windrose",
 			"color": "0,0,255",
 			"provinces": [ {"id": 2, "name": "P1"}, {"id": 1, "name": "P2"}, {"id": 16, "name": "P3"} ],
@@ -16,8 +17,13 @@
 							{"id": 32, "name": "P4"}, {"id": 37, "name": "P5"}, {"id": 38, "name": "P6"},
 							{"id": 40, "name": "P7"}, {"id": 20, "name": "P8"}, {"id": 36, "name": "P9"},
 							{"id": 77, "name": "P10"} ],
-			"vassals": [],
 			"regions": [ { "name": "R1", "provinces": [32, 37, 40] } ]
+		},
+		{
+			"id": "alsonotreal",
+			"name": "Also Not a real faction",
+			"color": "0,255,255",
+			"provinces": [	{"id": 119, "name": "P1"}, {"id": 56, "name": "P2"} ]
 		}
 	]
 }

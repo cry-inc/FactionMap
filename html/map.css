@@ -2,8 +2,8 @@
 	position: relative;
 	margin: 0px;
 	padding: 0px;
-	width: 700px;
-	height: 700px;
+	width: 850px;
+	height: 850px;
 }
 
 #content {
@@ -18,7 +18,7 @@
 	position: absolute;
 	top: 0px;
 	left: 0px;
-	/*background-image: url(map.jpg);*/
+	background-image: url(map.png);
 }
 
 #selectionlayer  {
@@ -28,7 +28,7 @@
 }
 
 #footer, #header {
-	width: 700px;
+	width: 850px;
 	text-align: center;
 	padding-top: 10px;
 }
@@ -45,10 +45,20 @@
 }
 
 #coords {
-	width: 700px;
+	width: 850px;
 	height: 20;
 	text-align: center;
 	font-weight: bold;
+}
+
+.fimgtable {
+	width: 20px;
+	height: 20px;
+}
+
+.fimginfo {
+	width: 40px;
+	height: 40px;
 }
 
 body {
@@ -58,7 +68,7 @@ body {
 
 table {
 	border: 2px solid #dddddd;
-	width: 700px;
+	width: 850px;
 }
 
 th {

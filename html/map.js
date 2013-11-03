@@ -34,7 +34,18 @@ function finishedLoading(provincesResult, factionsResult, mapResults)
 	preprocessFactions();
 	drawBaseMap();
 	createPointsTable();
+	hookEvents();
+}
+
+function hookEvents()
+{
 	$("#drawstack").mousemove(onMouseOverMap);
+	$("#sortname").click(function(){createPointsTable("name")});
+	$("#sortpoints").click(function(){createPointsTable("-points")});
+	$("#sortprovinces").click(function(){createPointsTable("-provinces")});
+	$("#sortregions").click(function(){createPointsTable("-regions")});
+	$("#sortvassals").click(function(){createPointsTable("-vassals")});
+	$("#sortarea").click(function(){createPointsTable("-area")});
 }
 
 function showInfoBox(visible, screenx, screeny, provinceId)
@@ -53,6 +64,8 @@ function showInfoBox(visible, screenx, screeny, provinceId)
 				msg += "Region: " + province.regionname + "<br />";
 			if (faction.vassalof != -1)
 				msg += "Vassals of: " + factions[faction.vassalof].name + "<br />";
+			if (typeof faction.image !== "undefined")
+				msg += "<img class=\"fimginfo\" src=\"" + faction.image + "\" /><br />";
 		}
 		$("#infobox").html(msg);
 	} else
@@ -259,6 +272,9 @@ function preprocessFactions()
 			provinces[pid].name = factions[f].provinces[p].name;
 			provinces[pid].faction = f;
 		}
+		if (typeof factions[f].regions === "undefined") {
+			factions[f].regions = [];
+		}
 		for (var r = 0; r < factions[f].regions.length; r++) {
 			factions[f].regions[r].faction = f;
 			regions.push(factions[f].regions[r]);
@@ -268,11 +284,13 @@ function preprocessFactions()
 				provinces[pid].regionname = factions[f].regions[r].name;
 			}
 		}
-		
 	}
 	
 	// Replace vassal id with correct number and set faction.vassalof
 	for (var f = 0; f < factions.length; f++) {
+		if (typeof factions[f].vassals === "undefined") {
+			factions[f].vassals = [];
+		}
 		for (var v = 0; v < factions[f].vassals.length; v++) {
 			var vshort = factions[f].vassals[v];
 			var vid = findFactionId(vshort);
@@ -405,25 +423,69 @@ function areaToString(area)
 	return (Math.round(area * 10000) / 100) + "%";
 }
 
-function createTableRow(factionid)
+function createTableObject(factionid)
 {
 	var faction = factions[factionid];
+	return {
+		name: faction.name,
+		points: faction.points,
+		provinces: faction.provinces.length,
+		regions: faction.regions.length,
+		vassals: faction.vassals.length,
+		area: faction.area,
+		image: faction.image
+	};
+}
+
+function generateHtmlRow(fo)
+{
+	var image = "&nbsp;";
+	if (typeof fo.image !== "undefined") {
+		image = "<img class=\"fimgtable\" src=\"" + fo.image + "\" />";
+	}
+
 	var html = "<tr>";
-	html += "<td>" + faction.name + "</td>";
-	html += "<td>" + faction.points + "</td>";
-	html += "<td>" + faction.provinces.length + "</td>";
-	html += "<td>" + faction.regions.length + "</td>";
-	html += "<td>" + faction.vassals.length + "</td>";
-	html += "<td>" + areaToString(faction.area) + "</td>";
+	html += "<td>" + image + "</td>";
+	html += "<td>" + fo.name + "</td>";
+	html += "<td>" + fo.points + "</td>";
+	html += "<td>" + fo.provinces + "</td>";
+	html += "<td>" + fo.regions + "</td>";
+	html += "<td>" + fo.vassals + "</td>";
+	html += "<td>" + areaToString(fo.area) + "</td>";
 	return html + "</tr>";
 }
 
-function createPointsTable()
+function createPointsTable(orderCriteria)
 {
+	if (typeof orderCriteria === "undefined") {
+		orderCriteria = "-points";
+	}
+	
+	var factionObjects = [];
+	for (var f=0; f<factions.length; f++) {
+		var factionObject = createTableObject(f);
+		factionObjects.push(factionObject);
+	}
+	
+	factionObjects.sort(dynamicSort(orderCriteria));
+	
 	var html = "";
-	for (var f=0; f<factions.length; f++)
-		html += createTableRow(f);
+	for (var f=0; f<factionObjects.length; f++)
+		html += generateHtmlRow(factionObjects[f]);
 	$("#tablebody").html(html);
+}
+
+function dynamicSort(property)
+{
+    var sortOrder = 1;
+    if (property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+    return function (a, b) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+    }
 }
 
 function showMap()
