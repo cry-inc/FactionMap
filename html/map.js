@@ -126,7 +126,7 @@ function drawBaseMap()
 {
 	drawProvinces();
 	drawRegionBorders();
-	drawFactionBorders();
+	drawVassalBorders();
 }
 
 function drawProvinces()
@@ -146,22 +146,9 @@ function drawProvinces()
 		baseCtx.closePath();
 		if (province.faction != -1) {
 			var opacity = "0.4";
-			if (province.heartland) opacity = "0.5";
+			if (province.heartland) opacity = "0.7";
 			baseCtx.fillStyle = "rgba(" + factions[province.faction].color + ", " + opacity + ")";
 			baseCtx.fill();
-			/*
-			var vassalof = factions[province.faction].vassalof;
-			if (vassalof != -1) {
-				var img = document.createElement('canvas');
-				img.width = 10; img.height = 10;
-				var imgctx = img.getContext("2d");
-				imgctx.fillStyle = "rgba(" + factions[vassalof].color + ", 0.2)";
-				imgctx.fillRect(0, 0, 5, 2);
-				var pattern = baseCtx.createPattern(img, "repeat");
-				baseCtx.fillStyle = pattern;
-				baseCtx.fill();
-			}
-			*/
 		}
 		baseCtx.stroke();
 	});
@@ -189,29 +176,68 @@ function drawRegionBorders()
 	}
 }
 
-function drawFactionBorders()
+function drawVassalBorders()
 {
-	baseCtx.lineWidth = 3;
+	// buffers for offscreen drawing
+	var borderCanvas = document.createElement("canvas");
+	var provinceCanvas = document.createElement("canvas");
+    borderCanvas.width = provinceCanvas.width = baseCanvas.width;
+    borderCanvas.height = provinceCanvas.height = baseCanvas.height;
+    var borderCtx = borderCanvas.getContext("2d");
+	var provinceCtx = provinceCanvas.getContext("2d");
+
+	borderCtx.lineWidth = 15;
+	borderCtx.lineJoin = "round";
+	borderCtx.miterLimit = borderCtx.lineWidth;
+	
 	for (var f = 0; f < factions.length; f++) {
 		var faction = factions[f];
 		var factionId = f;
 		if (faction.vassalof != -1) {
 			factionId = faction.vassalof
 			var color = factions[factionId].color;
-			baseCtx.strokeStyle = "rgba(" + color + ", 0.5)";
+			
+			borderCtx.clearRect(0, 0, borderCanvas.width, borderCanvas.height);
+			provinceCtx.clearRect(0, 0, provinceCanvas.width, provinceCanvas.height);
+			
+			// draw faction borders as thick line
+			borderCtx.strokeStyle = "rgba(" + color + ", 0.5)";
 			for (var e = 0; e < faction.edges.length; e++) {
 				var edge = faction.edges[e];
-				var x = edge.points[0].x * baseCanvas.width;
-				var y = edge.points[0].y * baseCanvas.height;
-				baseCtx.beginPath();
-				baseCtx.moveTo(x, y);
+				var x = edge.points[0].x * borderCanvas.width;
+				var y = edge.points[0].y * borderCanvas.height;
+				borderCtx.beginPath();
+				borderCtx.moveTo(x, y);
 				for (var p=1; p<edge.points.length; p++) {
-					x = edge.points[p].x * baseCanvas.width;
-					y = edge.points[p].y * baseCanvas.height;
-					baseCtx.lineTo(x, y);
+					x = edge.points[p].x * borderCanvas.width;
+					y = edge.points[p].y * borderCanvas.height;
+					borderCtx.lineTo(x, y);
 				}
-				baseCtx.stroke();
+				borderCtx.stroke();
 			}
+			
+			// draw all faction provinces as filled polygons
+			provinceCtx.fillStyle = "white";
+			for (var p = 0; p < faction.provinces.length; p++) {
+				var province = provinces[faction.provinces[p].id];
+				var x = province.points[0].x * provinceCanvas.width;
+				var y = province.points[0].y * provinceCanvas.height;
+				provinceCtx.beginPath();
+				provinceCtx.moveTo(x, y);
+				for (var i = 1; i < province.points.length; i++) {
+					x = province.points[i].x * provinceCanvas.width;
+					y = province.points[i].y * provinceCanvas.height;
+					provinceCtx.lineTo(x, y);
+				}
+				provinceCtx.closePath();
+				provinceCtx.fill();
+			}
+			
+			// copy only the part of the faction borders inside of the provinces
+			// to the final image (using a composition of the two offscreen buffers)
+			borderCtx.globalCompositeOperation = 'destination-in';
+			borderCtx.drawImage(provinceCanvas, 0, 0);
+			baseCtx.drawImage(borderCanvas, 0, 0);
 		}
 	}
 }
