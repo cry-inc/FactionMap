@@ -45,20 +45,32 @@
 }
 
 #coords {
+	margin-top: 5px;
 	width: 850px;
 	height: 20;
 	text-align: center;
 	font-weight: bold;
+	background-color: #dddddd;
+}
+
+.imgcell {
+	text-align: center;
+	width: 25px;
 }
 
 .fimgtable {
 	width: 20px;
 	height: 20px;
+	vertical-align: bottom;
 }
 
 .fimginfo {
 	width: 40px;
 	height: 40px;
+}
+
+a {
+	color: #7c0f0f;
 }
 
 body {
@@ -69,6 +81,10 @@ body {
 table {
 	border: 2px solid #dddddd;
 	width: 850px;
+}
+
+th a {
+	text-decoration: none;
 }
 
 th {

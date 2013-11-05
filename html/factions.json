@@ -4,26 +4,27 @@
 			"id": "travellers",
 			"image": "traveller.png",
 			"name": "Travellers of the Windrose",
-			"color": "0,0,255",
+			"color": "70,140,220",
 			"provinces": [ {"id": 2, "name": "P1"}, {"id": 1, "name": "P2"}, {"id": 16, "name": "P3"} ],
 			"vassals": [ "notreal" ],
 			"regions": [ ]
 		},
 		{
 			"id": "notreal",
-			"name": "Not a real faction",
-			"color": "255,0,255",
-			"provinces": [	{"id": 11, "name": "P1"}, {"id": 19, "name": "P2"}, {"id": 12, "name": "P3"},
-							{"id": 32, "name": "P4"}, {"id": 37, "name": "P5"}, {"id": 38, "name": "P6"},
-							{"id": 40, "name": "P7"}, {"id": 20, "name": "P8"}, {"id": 36, "name": "P9"},
-							{"id": 77, "name": "P10"} ],
+			"name": "This Faction Does Not Exist",
+			"color": "70,180,0",
+			"provinces": [	{"id": 11, "name": "P01"}, {"id": 19, "name": "P02"}, {"id": 12, "name": "P03"},
+							{"id": 32, "name": "P04"}, {"id": 37, "name": "P05"}, {"id": 38, "name": "P06"},
+							{"id": 76, "name": "P07"}, {"id": 20, "name": "P08"}, {"id": 36, "name": "P09"},
+							{"id": 66, "name": "P10"}, {"id": 94, "name": "P11"}, {"id": 40, "name": "P12"},
+							{"id": 106, "name": "P13"}, {"id": 103, "name": "P14"}, {"id": 82, "name": "P15"}							],
 			"regions": [ { "name": "R1", "provinces": [32, 37, 40] } ]
 		},
 		{
-			"id": "alsonotreal",
-			"name": "Also Not a real faction",
-			"color": "0,255,255",
-			"provinces": [	{"id": 119, "name": "P1"}, {"id": 56, "name": "P2"} ]
+			"id": "arkadia",
+			"name": "Arkadia",
+			"color": "255,185,0",
+			"provinces": [	{"id": 161, "name": "P1"}, {"id": 210, "name": "P2"} ]
 		}
 	]
 }

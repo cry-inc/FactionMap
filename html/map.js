@@ -186,7 +186,7 @@ function drawVassalBorders()
     var borderCtx = borderCanvas.getContext("2d");
 	var provinceCtx = provinceCanvas.getContext("2d");
 
-	borderCtx.lineWidth = 15;
+	borderCtx.lineWidth = 10;
 	borderCtx.lineJoin = "round";
 	borderCtx.miterLimit = borderCtx.lineWidth;
 	
@@ -196,27 +196,9 @@ function drawVassalBorders()
 		if (faction.vassalof != -1) {
 			factionId = faction.vassalof
 			var color = factions[factionId].color;
-			
-			borderCtx.clearRect(0, 0, borderCanvas.width, borderCanvas.height);
-			provinceCtx.clearRect(0, 0, provinceCanvas.width, provinceCanvas.height);
-			
-			// draw faction borders as thick line
-			borderCtx.strokeStyle = "rgba(" + color + ", 0.5)";
-			for (var e = 0; e < faction.edges.length; e++) {
-				var edge = faction.edges[e];
-				var x = edge.points[0].x * borderCanvas.width;
-				var y = edge.points[0].y * borderCanvas.height;
-				borderCtx.beginPath();
-				borderCtx.moveTo(x, y);
-				for (var p=1; p<edge.points.length; p++) {
-					x = edge.points[p].x * borderCanvas.width;
-					y = edge.points[p].y * borderCanvas.height;
-					borderCtx.lineTo(x, y);
-				}
-				borderCtx.stroke();
-			}
-			
+
 			// draw all faction provinces as filled polygons
+			provinceCtx.clearRect(0, 0, provinceCanvas.width, provinceCanvas.height);
 			provinceCtx.fillStyle = "white";
 			for (var p = 0; p < faction.provinces.length; p++) {
 				var province = provinces[faction.provinces[p].id];
@@ -232,7 +214,25 @@ function drawVassalBorders()
 				provinceCtx.closePath();
 				provinceCtx.fill();
 			}
-			
+
+			// draw faction borders as thick line
+			borderCtx.strokeStyle = "rgba(" + color + ", 0.5)";
+			borderCtx.clearRect(0, 0, borderCanvas.width, borderCanvas.height);
+			for (var e = 0; e < faction.edges.length; e++) {
+				var edge = faction.edges[e];
+				var x = edge.points[0].x * borderCanvas.width;
+				var y = edge.points[0].y * borderCanvas.height;
+				borderCtx.beginPath();
+				borderCtx.moveTo(x, y);
+				for (var p=1; p<edge.points.length; p++) {
+					x = edge.points[p].x * borderCanvas.width;
+					y = edge.points[p].y * borderCanvas.height;
+					borderCtx.lineTo(x, y);
+				}
+				borderCtx.closePath();
+				borderCtx.stroke();
+			}
+
 			// copy only the part of the faction borders inside of the provinces
 			// to the final image (using a composition of the two offscreen buffers)
 			borderCtx.globalCompositeOperation = 'destination-in';
@@ -348,7 +348,7 @@ function preprocessFactions()
 			var pid = regions[r].provinces[p];
 			var edges = provinces[pid].edges;
 			for (var e = 0; e < edges.length; e++) {
-				if (!isInList(edges[e].neighbor, regions[r].provinces)) {
+				if (!regions[r].provinces.contains(edges[e].neighbor)) {
 					regions[r].edges.push(edges[e]);
 				}
 			}
@@ -362,6 +362,7 @@ function preprocessFactions()
 			var faction = province.faction;
 			for (var e = 0; e < province.edges.length; e++) {
 				var edge = province.edges[e];
+				edge.province = p;
 				if (edge.neighbor == -1) {
 					factions[faction].edges.push(edge);
 				} else {
@@ -374,19 +375,39 @@ function preprocessFactions()
 		}
 	}
 	
+	// Connect faction border to polygon(s)
+	for (var f = 0; f < factions.length; f++) {
+		var connectCount;
+		do { connectCount = connectEdges(factions[f].edges); }
+		while (connectCount > 0);
+	}
+	
 	// Calculate points and areas of factions
 	for (var f = 0; f < factions.length; f++) {
 		calculatePointsAndArea(f);
 	}
 }
 
-function isInList(item, list)
+function connectEdges(edges)
 {
-	for (var i=0; i<list.length; i++) {
-		if (item == list[i])
-			return true;
+	for (var e1 = 0; e1 < edges.length; e1++) {
+		for (var e2 = 0; e2 < edges.length; e2++) {
+			if (e1 != e2 && isConnected(edges[e1].points[edges[e1].points.length - 1], edges[e2].points[0])) {
+				edges[e1].points = edges[e1].points.concat(edges[e2].points);
+				edges.remove(e2);
+				return 1;
+			}
+		}
 	}
-	return false;
+	return 0;
+}
+
+function isConnected(p1, p2)
+{
+	var xd = p1.x - p2.x;
+	var yd = p1.y - p2.y;
+	var dist = Math.sqrt(xd * xd + yd * yd);
+	return dist < 0.001;
 }
 
 function buildPoints(p)
@@ -459,7 +480,8 @@ function createTableObject(factionid)
 		regions: faction.regions.length,
 		vassals: faction.vassals.length,
 		area: faction.area,
-		image: faction.image
+		image: faction.image,
+		color: faction.color
 	};
 }
 
@@ -471,7 +493,7 @@ function generateHtmlRow(fo)
 	}
 
 	var html = "<tr>";
-	html += "<td>" + image + "</td>";
+	html += "<td class=\"imgcell\" style=\"background-color:rgb(" + fo.color + ")\">" + image + "</td>";
 	html += "<td>" + fo.name + "</td>";
 	html += "<td>" + fo.points + "</td>";
 	html += "<td>" + fo.provinces + "</td>";
@@ -517,11 +539,26 @@ function dynamicSort(property)
 function showMap()
 {
 	$("#drawstack").css({display: "block"});
+	$("#coords").css({display: "block"});
 	$("#points").css({display: "none"});
 }
 
 function showPoints()
 {
 	$("#drawstack").css({display: "none"});
+	$("#coords").css({display: "none"});
+	$("#infobox").css({display: "none"});
 	$("#points").css({display: "block"});
 }
+
+Array.prototype.remove = function(from, to) {
+	var rest = this.slice((to || from) + 1 || this.length);
+	this.length = from < 0 ? this.length + from : from;
+	return this.push.apply(this, rest);
+};
+
+Array.prototype.contains = function(item) {
+	for (var i = 0; i < this.length; i++)
+		if (this[i] == item) return true;
+	return false;
+};
