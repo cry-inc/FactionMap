@@ -5,7 +5,11 @@
 			"image": "traveller.png",
 			"name": "Travellers of the Windrose",
 			"color": "70,140,220",
-			"provinces": [ {"id": 2, "name": "P1"}, {"id": 1, "name": "P2"}, {"id": 16, "name": "P3"} ],
+			"provinces": [
+				{"id": 2, "name": "Windfall Keys"},
+				{"id": 1, "name": "Upper Antides"},
+				{"id": 16, "name": "Lower Antides"}
+			],
 			"vassals": [ "notreal" ],
 			"regions": [ ]
 		},

@@ -51,25 +51,34 @@ function hookEvents()
 function showInfoBox(visible, screenx, screeny, provinceId)
 {
 	if (visible) {
-		$("#infobox").css({display: "block", left: screenx + 5, top: screeny + 5 });
 		var province = provinces[provinceId];
-		var msg = "Id: " + provinceId + ", Area: " + areaToString(province.area) + "<br />";
+		$("#infobox").css({left: screenx + 5, top: screeny + 5 });
+		$("#infoId").html(provinceId);
+		$("#infoArea").html(areaToString(province.area));
+		$("#infoIfOwned").css({display: province.faction != -1 ? "block" : "none"});
 		if (province.faction != -1) {
 			var faction = factions[province.faction];
-			msg += "Name: " + province.name + "<br />";
-			msg += "Faction: " + faction.name + "<br />";
-			if (province.heartland)
-				msg += "Heartland!<br />";
-			if (province.region != -1)
-				msg += "Region: " + province.regionname + "<br />";
-			if (faction.vassalof != -1)
-				msg += "Vassals of: " + factions[faction.vassalof].name + "<br />";
-			if (typeof faction.image !== "undefined")
-				msg += "<img class=\"fimginfo\" src=\"" + faction.image + "\" /><br />";
+			$("#infoProvince").html(province.name);
+			$("#infoFaction").html(faction.name);
+			$("#infoHeartland").css({display: province.heartland ? "block" : "none"});
+			
+			$("#infoIfRegion").css({display: province.region != -1 ? "block" : "none"});
+			if (province.region != -1) {
+				$("#infoRegion").html(province.regionname);
+			}
+			
+			$("#infoIfVassal").css({display: faction.vassalof != -1 ? "block" : "none"});
+			if (faction.vassalof != -1) {
+				$("#infoVassal").html(factions[faction.vassalof].name);
+			}
+			
+			$("#infoImage").css({display: typeof faction.image !== "undefined" ? "block" : "none"});
+			if (typeof faction.image !== "undefined") {
+				$("#infoImage").css({"background-image": "url(" + faction.image + ")"});
+			}
 		}
-		$("#infobox").html(msg);
-	} else
-		$("#infobox").css({display: "none"});
+	}
+	$("#infobox").css({display: visible ? "block" : "none"});
 }
 
 function highlightProvince(provinceId)
