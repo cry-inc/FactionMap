@@ -2,8 +2,8 @@
 	
 	$updatePassword = 'password';
 	$factionFile = '../factions.json';
-	$message = '&nbsp';
-	$factionData = '';
+	$message = '';
+	$factionData = FALSE;
 
 	if (isset($_POST['password']) && isset($_POST['data'])) {
 		$factionData = strip_tags($_POST['data']);
@@ -19,10 +19,11 @@
 		}
 	}
 	
-	if ($factionData === '') {
+	if ($factionData === FALSE) {
 		$factionData = file_get_contents($factionFile);
-		if (!$factionData) {
+		if ($factionData === FALSE) {
 			$message = '<span style="color:red">Could not load file ' . $factionFile . '!</span>';
+			$factionData = '';
 		}
 	}
 
@@ -44,13 +45,24 @@
 					$(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + 1;
 				}
 			});
+			
+			function checkAndSubmit() {
+				try {
+					JSON.parse(document.editform.data.value);
+					return true;
+				} catch (e) {
+					alert("There seems to be a JSON syntax error! The data will not be saved.");
+					console.log(e);
+					return false;
+				}
+			}
 		</script>
 	</head>
 	<body>
 		<div>
 			<?php echo $message; ?>
 		</div>
-		<form method="POST">
+		<form name="editform" method="POST" onsubmit="return checkAndSubmit()">
 			Password: <input type="text" name="password" /><br />
 			<textarea id="ta" autocorrect="off" autocapitalize="off" spellcheck="false"
 				style="width:90%;height:90%" name="data"><?php echo $factionData; ?></textarea><br />
