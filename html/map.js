@@ -372,12 +372,13 @@ function preprocessFactions()
 			for (var e = 0; e < province.edges.length; e++) {
 				var edge = province.edges[e];
 				edge.province = p;
-				if (edge.neighbor == -1) {
-					factions[faction].edges.push(edge);
+				// Important: create a copy of the edge object
+				if (edge.neighbor == -1) {	
+					factions[faction].edges.push(jQuery.extend({}, edge));
 				} else {
 					var nf = provinces[edge.neighbor].faction;
 					if (nf != faction) {
-						factions[faction].edges.push(edge);
+						factions[faction].edges.push(jQuery.extend({}, edge));
 					}
 				}
 			}
@@ -419,15 +420,16 @@ function isConnected(p1, p2)
 	return dist < 0.001;
 }
 
-function buildPoints(p)
+function buildPoints(province)
 {
-	p.points = [];
-	for (var i=0; i<p.edges.length; i++) {
-		p.edges[i].points = [];
-		for (var j=0; j<p.edges[i].xpoints.length && j<p.edges[i].ypoints.length; j++) {
-			var point = {x: p.edges[i].xpoints[j], y: p.edges[i].ypoints[j]};
-			p.points.push(point);
-			p.edges[i].points.push(point);
+	province.points = [];
+	for (var i=0; i<province.edges.length; i++) {
+		var edge = province.edges[i];
+		edge.points = [];
+		for (var j=0; j<edge.xpoints.length && j<edge.ypoints.length; j++) {
+			var point = {x: edge.xpoints[j], y: edge.ypoints[j]};
+			province.points.push(point);
+			edge.points.push(point);
 		}
 	}
 }
