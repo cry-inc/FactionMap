@@ -4,15 +4,20 @@
 	$factionFile = '../factions.json';
 	$message = '';
 	$factionData = FALSE;
+	$lastedit = filemtime($factionFile);
 
 	if (isset($_POST['password']) && isset($_POST['data'])) {
 		$factionData = strip_tags($_POST['data']);
 		if ($_POST['password'] === $updatePassword) {
-			$result = file_put_contents($factionFile, $factionData);
-			if (!$result) {
-				$message = '<span style="color:red">Could not save file ' . $factionFile . '!</span>';
+			if (isset($_POST['filetime']) && is_numeric($_POST['filetime']) && $_POST['filetime'] < $lastedit) {
+				$message = '<span style="color:red">The file was modified since you opened it. To overwrite it, enter the password and save.</span>';
 			} else {
-				$message = '<span style="color:green">Saved to file ' . $factionFile . '!</span>';
+				$result = file_put_contents($factionFile, $factionData);
+				if (!$result) {
+					$message = '<span style="color:red">Could not save file ' . $factionFile . '!</span>';
+				} else {
+					$message = '<span style="color:green">Saved to file ' . $factionFile . '!</span>';
+				}
 			}
 		} else {
 			$message = '<span style="color:red">Invalid password. Changes are NOT saved!</span>';
@@ -66,6 +71,7 @@
 			Password: <input type="text" name="password" /><br />
 			<textarea id="ta" autocorrect="off" autocapitalize="off" spellcheck="false"
 				style="width:90%;height:90%" name="data"><?php echo $factionData; ?></textarea><br />
+			<input type="hidden" name="filetime" value="<?php echo $lastEdit; ?>" />
 			<input type="submit" value="Save" />
 		</form>
 	</body>
