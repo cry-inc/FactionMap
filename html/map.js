@@ -341,7 +341,7 @@ function preprocessFactions()
 			provinces[i].heartland = true;
 			for (var j = 0; j < provinces[i].edges.length; j++) {
 				var neighborId = provinces[i].edges[j].neighbor;
-				if (provinces[neighborId].faction == -1 ||
+				if (neighborId == -1 || provinces[neighborId].faction == -1 ||
 					provinces[neighborId].faction != provinces[i].faction) {
 					provinces[i].heartland = false;
 					break;
