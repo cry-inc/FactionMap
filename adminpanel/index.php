@@ -1,7 +1,11 @@
 <?php
 	
+	// start config variables
 	$updatePassword = 'password';
 	$factionFile = '../factions.json';
+	$mapUrl = '../';
+	// end config variables
+	
 	$message = '';
 	$factionData = FALSE;
 	$lastedit = filemtime($factionFile);
@@ -68,7 +72,8 @@
 			<?php echo $message; ?>
 		</div>
 		<form name="editform" method="POST" onsubmit="return checkAndSubmit()">
-			Password: <input type="text" name="password" /><br />
+			Password: <input type="text" name="password" />
+			<a target="_blank" href="<?php echo $mapUrl; ?>">Link to the Faction Map</a> <br />
 			<textarea id="ta" autocorrect="off" autocapitalize="off" spellcheck="false"
 				style="width:90%;height:90%" name="data"><?php echo $factionData; ?></textarea><br />
 			<input type="hidden" name="filetime" value="<?php echo $lastEdit; ?>" />
