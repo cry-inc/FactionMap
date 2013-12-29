@@ -2,7 +2,7 @@
 	"factions": [
 		{
 			"id": "travellers",
-			"image": "traveller.png",
+			"image": "images/traveller.png",
 			"name": "Travellers of the Windrose",
 			"color": "70,140,220",
 			"provinces": [
