@@ -81,6 +81,12 @@ function showInfoBox(visible, screenx, screeny, provinceId)
 			if (province.contestedby != -1) {
 				$("#infoContested").html(factions[province.contestedby].name);
 			}
+			
+			$("#infoIfPrevious").css({display: province.previousfactions.length > 0 ? "block" : "none"});
+			if (province.previousfactions.length > 0) {
+				var list = province.previousfactions.map(function(x) { return factions[x].name; });
+				$("#infoPrevious").html(list.join(', '));
+			}
 		}
 	}
 	$("#infobox").css({display: visible ? "block" : "none"});
@@ -300,6 +306,7 @@ function preprocessProvinces()
 		provinces[p].region = -1;
 		provinces[p].regionname = "";
 		provinces[p].contestedby = -1;
+		provinces[p].previousfactions = [];
 		
 		// Merge edges to one large polygon
 		buildPoints(provinces[p]);
@@ -325,6 +332,14 @@ function preprocessFactions()
 			if (typeof factions[f].provinces[p].contestedby !== "undefined") {
 				var shortName = factions[f].provinces[p].contestedby;
 				provinces[pid].contestedby = findFactionId(shortName);
+			}
+			if (typeof factions[f].provinces[p].previousfactions !== "undefined") {
+				var shortNames = factions[f].provinces[p].previousfactions;
+				var factionNumbers = [];
+				for (var o=0; o<shortNames.length; o++) {
+					factionNumbers.push(findFactionId(shortNames[o]));
+				}
+				provinces[pid].previousfactions = factionNumbers;
 			}
 		}
 		if (typeof factions[f].regions === "undefined") {
