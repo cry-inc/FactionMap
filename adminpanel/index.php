@@ -1,11 +1,37 @@
 <?php
 	
 	// start config variables
-	$updatePassword = 'password';
-	$factionFile = '../factions.json';
-	$mapUrl = '../';
+	$updatePassword = 'password';   // Password needed for saving changes
+	$mapPath = '../';               // Relative path to directory with the faction map files
+	$mapUrl = '../';                // Relative or absolute path for accessing the faction map over HTTP
 	// end config variables
+
+	if (isset($_GET['backup']) && $_GET['backup'] === 'true') {
+		$file = tempnam(sys_get_temp_dir(), "zip");
+		
+		$zip = new ZipArchive();
+		$zip->open($file, ZipArchive::OVERWRITE);
+		$zip->addFile($mapPath . 'factions.json', 'factions.json');
+		$zip->addFile($mapPath . 'provinces.json', 'provinces.json');
+		$zip->addFile($mapPath . 'map.json', 'map.json');
+		$zip->addFile($mapPath . 'index.html', 'index.html');
+		$zip->addFile($mapPath . 'map.css', 'map.css');
+		$zip->addFile($mapPath . 'map.js', 'map.js');
+		$zip->addFile($mapPath . 'jquery.js', 'jquery.js');
+		$zip->addFile($mapPath . 'map.png', 'map.png');
+		$zip->close();
+		
+		header('Content-Type: application/zip');
+		header('Content-Length: ' . filesize($file));
+		$fileName = 'faction_map_backup_' . time() . '.zip';
+		header('Content-Disposition: attachment; filename="' . $fileName . '"');
+		readfile($file);
+		unlink($file);
+		
+		exit();
+	}
 	
+	$factionFile = $mapPath . 'factions.json';
 	$message = '';
 	$factionData = FALSE;
 	$lastedit = filemtime($factionFile);
@@ -73,7 +99,8 @@
 		</div>
 		<form name="editform" method="POST" onsubmit="return checkAndSubmit()">
 			Password: <input type="text" name="password" />
-			<a target="_blank" href="<?php echo $mapUrl; ?>">Link to the Faction Map</a> <br />
+			<a target="_blank" href="<?php echo $mapUrl; ?>">Link to the Faction Map</a> |  
+			<a target="_blank" href="?backup=true">Download ZIP compressed backup of all files</a><br />
 			<textarea id="ta" autocorrect="off" autocapitalize="off" spellcheck="false"
 				style="width:90%;height:90%" name="data"><?php echo $factionData; ?></textarea><br />
 			<input type="hidden" name="filetime" value="<?php echo $lastEdit; ?>" />
