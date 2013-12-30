@@ -76,6 +76,11 @@ function showInfoBox(visible, screenx, screeny, provinceId)
 			if (typeof faction.image !== "undefined") {
 				$("#infoImage").css({"background-image": "url(" + faction.image + ")"});
 			}
+			
+			$("#infoIfContested").css({display: province.contestedby != -1 ? "block" : "none"});
+			if (province.contestedby != -1) {
+				$("#infoContested").html(factions[province.contestedby].name);
+			}
 		}
 	}
 	$("#infobox").css({display: visible ? "block" : "none"});
@@ -158,6 +163,16 @@ function drawProvinces()
 			if (province.heartland) opacity = "0.7";
 			baseCtx.fillStyle = "rgba(" + factions[province.faction].color + ", " + opacity + ")";
 			baseCtx.fill();
+			if (province.contestedby != -1) {
+				var img = document.createElement('canvas');
+				img.width = 5; img.height = 10;
+				var imgctx = img.getContext("2d");
+				imgctx.fillStyle = "rgba(" + factions[province.contestedby].color + ", " + opacity + ")";
+				imgctx.fillRect(0, 0, 3, 10);
+				var pattern = baseCtx.createPattern(img, "repeat");
+				baseCtx.fillStyle = pattern;
+				baseCtx.fill();
+			}
 		}
 		baseCtx.stroke();
 	});
@@ -278,21 +293,22 @@ function provinceArea(province)
 
 function preprocessProvinces()
 {
-	for (var i = 0; i < provinces.length; i++) {
+	for (var p = 0; p < provinces.length; p++) {
 		
 		// Set faction and regions of provinces to neutral
-		provinces[i].faction = -1;
-		provinces[i].region = -1;
-		provinces[i].regionname = "";
+		provinces[p].faction = -1;
+		provinces[p].region = -1;
+		provinces[p].regionname = "";
+		provinces[p].contestedby = -1;
 		
 		// Merge edges to one large polygon
-		buildPoints(provinces[i]);
+		buildPoints(provinces[p]);
 		
 		// Find bounding box of provinces
-		findBoundingBox(provinces[i]);
+		findBoundingBox(provinces[p]);
 		
 		// Calculate area of province
-		provinceArea(provinces[i]);
+		provinceArea(provinces[p]);
 	}
 }
 
@@ -306,6 +322,10 @@ function preprocessFactions()
 			var pid = factions[f].provinces[p].id;
 			provinces[pid].name = factions[f].provinces[p].name;
 			provinces[pid].faction = f;
+			if (typeof factions[f].provinces[p].contestedby !== "undefined") {
+				var shortName = factions[f].provinces[p].contestedby;
+				provinces[pid].contestedby = findFactionId(shortName);
+			}
 		}
 		if (typeof factions[f].regions === "undefined") {
 			factions[f].regions = [];
@@ -321,7 +341,7 @@ function preprocessFactions()
 		}
 	}
 	
-	// Replace vassal id with correct number and set faction.vassalof
+	// Replace vassal id with correct faction number and set faction.vassalof
 	for (var f = 0; f < factions.length; f++) {
 		if (typeof factions[f].vassals === "undefined") {
 			factions[f].vassals = [];

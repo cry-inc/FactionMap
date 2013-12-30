@@ -18,7 +18,7 @@
 			"name": "This Faction Does Not Exist",
 			"color": "70,180,0",
 			"provinces": [	{"id": 11, "name": "P01", "contestedby": "travellers"}, {"id": 19, "name": "P02"}, {"id": 12, "name": "P03"},
-							{"id": 32, "name": "P04"}, {"id": 37, "name": "P05"}, {"id": 38, "name": "P06"},
+							{"id": 32, "name": "P04", "contestedby": "travellers"}, {"id": 37, "name": "P05"}, {"id": 38, "name": "P06"},
 							{"id": 76, "name": "P07"}, {"id": 20, "name": "P08"}, {"id": 36, "name": "P09"},
 							{"id": 66, "name": "P10"}, {"id": 94, "name": "P11"}, {"id": 40, "name": "P12"},
 							{"id": 106, "name": "P13"}, {"id": 103, "name": "P14"}, {"id": 82, "name": "P15"}							],

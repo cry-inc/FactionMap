@@ -53,13 +53,13 @@
 	min-height: 110px;
 }
 
-#infoIdLabel, #infoAreaLabel, #infoProvinceLabel, #infoFactionLabel, #infoRegionLabel, #infoVassalLabel  {
+#infoIdLabel, #infoAreaLabel, #infoProvinceLabel, #infoFactionLabel, #infoRegionLabel, #infoVassalLabel, #infoContestedLabel {
 	font-size: 7pt;
 	color: #999999;
 	background-color: white;
 }
 
-#infoProvince, #infoFaction, #infoRegion, #infoVassal  {
+#infoProvince, #infoFaction, #infoRegion, #infoVassal, #infoContested {
 	width: 155px;
 	font-size: 9pt;
 	background-color: white;
