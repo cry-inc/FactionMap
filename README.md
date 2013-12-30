@@ -24,13 +24,13 @@ Basic structure: Each faction has its own block containing all provinces, region
 
 	{
 		"id": "travellers", // Mandatory, must be unique and should contain no upper case, special chars or spaces!
-		"image": "traveller.png", // Optional, the relative or absolute path to a small faction logo as PNG file with alpha channel.
+		"image": "traveller.png", // Optional, the relative or absolute path to a small faction logo as PNG file with alpha channel. Data URLs are also possible! (see http://dataurl.net/ for details)
 		"name": "Travellers of the Windrose", // Mandatory, contains the full name of the faction
 		"color": "70,140,220", // Mandatory, contains the RGB encoded faction color (use Paint or GIMP for this).
 		"provinces": [ // Mandatory, contains blocks with the claimed provinces, separated by comma.
 			{"id": 2, "name": "Windfall Keys"}, // Each block contains the province Id and a name.
-			{"id": 1, "name": "Upper Antides"},
-			{"id": 16, "name": "Lower Antides"}
+			{"id": 1, "name": "Upper Antides", "previousfactions": ["somefactionid1", "somefactionid2"]}, // Provinces can have a optional list with previous owners
+			{"id": 16, "name": "Lower Antides", "contestedby": "somefactionid"} // Provinces can be contested by another faction
 		],
 		"vassals": [ "factionid1", "factionid2" ], // Optional, contains a comma separated list of vassals. Contains the Ids (and not names!) of other factions.
 		"regions": [ { "name": "Deep Blue", "provinces": [2, 1, 16] } ] // Optional, contains a comma separated list of region blocks. Each region block has a name and a list with the relevant province Ids.
