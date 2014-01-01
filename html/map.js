@@ -447,6 +447,9 @@ function preprocessFactionData()
 					factionIdsToNumbers(factions[f].provinces[p].previousfactions);
 			}
 		}
+		if (typeof factions[f].disbanded === "undefined") {
+			factions[f].disbanded = false;
+		}
 		if (typeof factions[f].capital !== "undefined") {
 			provinces[factions[f].capital].capital = true;
 		} else {
@@ -675,8 +678,10 @@ function createPointsTable(orderCriteria)
 	
 	var factionObjects = [];
 	for (var f=0; f<factions.length; f++) {
-		var factionObject = createTableObject(f);
-		factionObjects.push(factionObject);
+		if (!factions[f].disbanded) {
+			var factionObject = createTableObject(f);
+			factionObjects.push(factionObject);
+		}
 	}
 	
 	factionObjects.sort(dynamicSort(orderCriteria));

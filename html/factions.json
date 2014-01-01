@@ -34,11 +34,18 @@
 					{"id": 224, "name": "F1"},
 					{"id": 161, "name": "F2"}],
 			"regions": [ {"name": "Fictionland", "provinces": [161]} ]
+		},
+		{
+			"id": "disbanded",
+			"name": "Disbanded",
+			"color": "255,0,125",
+			"disbanded": true,
+			"provinces": []
 		}
 	],
 	"abandoned": [
 		{"id": 10, "name": "Deserted Keys", "previousfactions": ["imaginary", "travellers"]},
-		{"id": 56, "name": "Abandoned Keys"},
+		{"id": 56, "name": "Abandoned Keys", "previousfactions": ["disbanded", "travellers"]},
 		{"id": 60, "name": "Abandoned Grounds", "previousfactions": ["imaginary"]}
 	]
 }

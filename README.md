@@ -28,6 +28,7 @@ Basic structure: Each faction has its own block in the "factions" section, conta
 		"name": "Travellers of the Windrose", // Mandatory, contains the full name of the faction
 		"color": "70,140,220", // Mandatory, contains the RGB encoded faction color (use Paint or GIMP for this).
 		"capital": 2, // Optional, contains the Id of the capital province.
+		"disbanded": false, // Optional, set to true if the faction does no longer exist and should be hidden in the scoreboard
 		"provinces": [ // Mandatory, contains blocks with the claimed provinces, separated by comma.
 			{"id": 2, "name": "Windfall Keys"}, // Each block contains the province Id and a name.
 			{"id": 1, "name": "Upper Antides", "previousfactions": ["somefactionid1", "somefactionid2"]}, // Provinces can have a optional list with previous owners
