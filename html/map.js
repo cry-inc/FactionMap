@@ -1,5 +1,6 @@
 var baseCanvas, baseCtx, selCanvas, selCtx;
 var provinces, factions, abandoned, map, regions = [];
+var totalImages, loadedImages;
 
 $(document).ready(startup);
 
@@ -12,7 +13,7 @@ function startup()
 		$.getJSON("provinces.json"),
 		$.getJSON("factions.json"),
 		$.getJSON("map.json")
-	).done(finishedLoading);
+	).done(finishedLoadingJson);
 }
 
 function setupCanvas()
@@ -25,7 +26,7 @@ function setupCanvas()
 	baseCanvas.height = selCanvas.height = $("#drawstack").height();
 }
 
-function finishedLoading(provincesResult, factionsResult, mapResults)
+function finishedLoadingJson(provincesResult, factionsResult, mapResults)
 {
 	provinces = provincesResult[0].provinces;
 	factions = factionsResult[0].factions;
@@ -33,7 +34,35 @@ function finishedLoading(provincesResult, factionsResult, mapResults)
 	map = mapResults[0].map;
 	preprocessProvinceData();
 	preprocessFactionData();
-	drawBaseMap();
+	loadFactionImages();
+}
+
+function loadedImage()
+{
+	loadedImages++;
+	if (loadedImages > 0 && totalImages == loadedImages) {
+		finishedLoadingImages();
+	}
+}
+
+function loadFactionImages()
+{
+	totalImages = loadedImages = 0;
+	var count = 0;
+	for (var f = 0; f < factions.length; f++) {		
+		if (typeof factions[f].image !== "undefined") {
+			factions[f].imageobject = new Image;
+			$(factions[f].imageobject).load(loadedImage);
+			factions[f].imageobject.src = factions[f].image;
+			count++;
+		}
+	}
+	totalImages = count;
+}
+
+function finishedLoadingImages()
+{
+	drawMap();
 	createPointsTable();
 	hookEvents();
 }
@@ -156,7 +185,7 @@ function showCoords(point)
 	$("#coords").html(Math.round(x) + "|" + Math.round(y));
 }
 
-function drawBaseMap()
+function drawMap()
 {
 	drawProvinces();
 	drawRegionBorders();
@@ -295,11 +324,8 @@ function drawPointOfInterests()
 			var province = provinces[factions[f].capital];
 			var x = province.centroid.x * baseCanvas.width;
 			var y = province.centroid.y * baseCanvas.height;
-			if (typeof factions[f].image !== "undefined") {
-				var img = new Image;
-				img.src = factions[f].image;
-				while (!img.complete);
-				baseCtx.drawImage(img, x - 24, y - 24, 48, 48);
+			if (typeof factions[f].imageobject !== "undefined") {
+				baseCtx.drawImage(factions[f].imageobject, x - 24, y - 24, 48, 48);
 			} else {
 				baseCtx.fillStyle = 'black';
 				fillStar(baseCtx, x, y, 10, 5, 0.4)
