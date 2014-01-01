@@ -20,13 +20,14 @@ Updating the map
 
 The faction.json file is written in JSON, which is very similar to XML. JSON is not a programming language. This means you don't have to be a programmer to update the map! There are strict rules for valid entries in the faction file.
 
-Basic structure: Each faction has its own block containing all provinces, regions, etc. Each faction block is separated by a comma. No comma after the last block. Here is an annotated example for a faction block:
+Basic structure: Each faction has its own block in the "factions" section, containing all provinces, regions, etc. Each faction block is separated by a comma. No comma after the last block. Here is an annotated example for a faction block:
 
 	{
 		"id": "travellers", // Mandatory, must be unique and should contain no upper case, special chars or spaces!
 		"image": "traveller.png", // Optional, the relative or absolute path to a small faction logo as PNG file with alpha channel. Data URLs are also possible! (see http://dataurl.net/ for details)
 		"name": "Travellers of the Windrose", // Mandatory, contains the full name of the faction
 		"color": "70,140,220", // Mandatory, contains the RGB encoded faction color (use Paint or GIMP for this).
+		"capital": 2, // Optional, contains the Id of the capital province.
 		"provinces": [ // Mandatory, contains blocks with the claimed provinces, separated by comma.
 			{"id": 2, "name": "Windfall Keys"}, // Each block contains the province Id and a name.
 			{"id": 1, "name": "Upper Antides", "previousfactions": ["somefactionid1", "somefactionid2"]}, // Provinces can have a optional list with previous owners
@@ -35,6 +36,8 @@ Basic structure: Each faction has its own block containing all provinces, region
 		"vassals": [ "factionid1", "factionid2" ], // Optional, contains a comma separated list of vassals. Contains the Ids (and not names!) of other factions.
 		"regions": [ { "name": "Deep Blue", "provinces": [2, 1, 16] } ] // Optional, contains a comma separated list of region blocks. Each region block has a name and a list with the relevant province Ids.
 	}
+	
+There is another section called "abandoned". This sectionis contains a list of abandoned/deserted provinces. The province blocks are just like the ones for active sections. The "name" and "id" fields are mandatory, the "previousfactions" field is optional.
 
 Remember: All entries and blocks are separated by commas! Do not omit the list brackets! They are always required, even when the list does only contain one item. Another common mistake is to put a comma before closing brackets of blocks and lists.
 
