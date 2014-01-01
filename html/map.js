@@ -161,6 +161,7 @@ function drawBaseMap()
 	drawProvinces();
 	drawRegionBorders();
 	drawVassalBorders();
+	drawPointOfInterests();
 }
 
 function drawProvinces()
@@ -286,6 +287,43 @@ function drawVassalBorders()
 	}
 }
 
+function drawPointOfInterests()
+{
+	// Mark the capital provinces of all factions
+	for (var f = 0; f < factions.length; f++) {
+		if (factions[f].capital >= 0) {
+			var province = provinces[factions[f].capital];
+			var x = province.centroid.x * baseCanvas.width;
+			var y = province.centroid.y * baseCanvas.height;
+			if (typeof factions[f].image !== "undefined") {
+				var img = new Image;
+				img.src = factions[f].image;
+				while (!img.complete);
+				baseCtx.drawImage(img, x - 24, y - 24, 48, 48);
+			} else {
+				baseCtx.fillStyle = 'black';
+				fillStar(baseCtx, x, y, 10, 5, 0.4)
+			}
+		}
+	}
+}
+
+function fillStar(ctx, x, y, radius, points, insetFactor)
+{
+    ctx.save();
+    ctx.beginPath();
+    ctx.translate(x, y);
+    ctx.moveTo(0, 0 - radius);
+    for (var i = 0; i < points; i++) {
+        ctx.rotate(Math.PI / points);
+        ctx.lineTo(0, 0 - (radius * insetFactor));
+        ctx.rotate(Math.PI / points);
+        ctx.lineTo(0, 0 - radius);
+    }
+    ctx.fill();
+    ctx.restore();
+}
+
 function pointInProvince(pt, province)
 {
 	var c = false;
@@ -299,7 +337,7 @@ function pointInProvince(pt, province)
 	return c;
 }
 
-function provinceArea(province)
+function calculateArea(province)
 {
 	var a1 = 0, a2 = 0;
 	for (var p=0; p<province.points.length-1; p++) {
@@ -309,6 +347,18 @@ function provinceArea(province)
 	a1 += province.points[province.points.length-1].x * province.points[0].y;
 	a2 += province.points[province.points.length-1].y * province.points[0].x;
 	province.area = (a1 - a2) / 2;
+}
+
+function calculateCentroid(province)
+{
+	var xs = 0, ys = 0;
+	for (var p=0; p<province.points.length-1; p++) {
+		xs +=	(province.points[p].x + province.points[p+1].x) *
+				(province.points[p].x * province.points[p+1].y - province.points[p+1].x * province.points[p].y);
+		ys +=	(province.points[p].y + province.points[p+1].y) *
+				(province.points[p].x * province.points[p+1].y - province.points[p+1].x * province.points[p].y);
+	}
+	province.centroid = {x: xs / (6 * province.area), y: ys / (6 * province.area)};
 }
 
 function preprocessProvinceData()
@@ -324,6 +374,7 @@ function preprocessProvinceData()
 		provinces[p].contestedby = -1;
 		provinces[p].previousfactions = [];
 		provinces[p].heartland = false;
+		provinces[p].capital = false;
 		
 		// Merge edges to one large polygon
 		buildPoints(provinces[p]);
@@ -332,7 +383,10 @@ function preprocessProvinceData()
 		findBoundingBox(provinces[p]);
 		
 		// Calculate area of province
-		provinceArea(provinces[p]);
+		calculateArea(provinces[p]);
+		
+		// Calculate centroid of province
+		calculateCentroid(provinces[p]);
 	}
 }
 
@@ -366,6 +420,11 @@ function preprocessFactionData()
 				provinces[pid].previousfactions =
 					factionIdsToNumbers(factions[f].provinces[p].previousfactions);
 			}
+		}
+		if (typeof factions[f].capital !== "undefined") {
+			provinces[factions[f].capital].capital = true;
+		} else {
+			factions[f].capital = -1;
 		}
 		if (typeof factions[f].regions === "undefined") {
 			factions[f].regions = [];

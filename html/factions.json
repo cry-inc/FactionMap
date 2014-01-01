@@ -5,6 +5,7 @@
 			"image": "images/traveller.png",
 			"name": "Travellers of the Windrose",
 			"color": "70,140,220",
+			"capital": 2,
 			"provinces": [
 				{"id": 2, "name": "Windfall Keys", "previousfactions": ["imaginary", "fiction"]},
 				{"id": 1, "name": "Upper Antilles", "previousfactions": ["imaginary"]},
@@ -17,6 +18,7 @@
 			"id": "imaginary",
 			"name": "Imaginary",
 			"color": "70,180,0",
+			"capital": 37,
 			"provinces": [	{"id": 11, "name": "P01", "contestedby": "travellers"}, {"id": 19, "name": "P02"}, {"id": 12, "name": "P03"},
 							{"id": 32, "name": "P04", "contestedby": "travellers"}, {"id": 37, "name": "P05"}, {"id": 38, "name": "P06"},
 							{"id": 76, "name": "P07"}, {"id": 20, "name": "P08"}, {"id": 36, "name": "P09"},
