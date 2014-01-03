@@ -7,7 +7,7 @@ Setting up a new map
 
 1. Upload everything from the "html" folder to your webspace.
 2. Create a background image using Dynmap or something similar. Upload it as map.png.
-3. Put the ingame corner coordinates of the background image into the file map.json.
+3. Put the ingame corner coordinates of the background image, server name and server URL into the file map.json.
 4. Load the background image into GIMP or Photoshop, create a new layer and draw the borders of your provinces. Use a black pen with hard borders (no alpha transparency!). Pay attention to the details and avoid gaps in the borders. Islands (provinces inside another provinces) are not supported!
 5. Export the borders without the background as binary (black & white) image. Borders should be black, the background white.
 6. Use a thinning tool to make all borders 1px thick. I used ImageJ for this task (http://rsb.info.nih.gov/ij/index.html).

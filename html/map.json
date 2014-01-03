@@ -1,6 +1,8 @@
 {
 	"map":
 	{
+		"title": "MineCraftCenter.net PVP Faction Map",
+		"url": "http://www.minecraftcenter.net/",
 		"topleftx": -4200,
 		"toplefty": -4200,
 		"bottomrightx": 4200,

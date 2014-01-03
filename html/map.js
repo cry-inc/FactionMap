@@ -32,6 +32,8 @@ function finishedLoadingJson(provincesResult, factionsResult, mapResults)
 	factions = factionsResult[0].factions;
 	abandoned = factionsResult[0].abandoned;
 	map = mapResults[0].map;
+	document.title = map.title;
+	$("#website").attr("href", map.url);
 	preprocessProvinceData();
 	preprocessFactionData();
 	loadFactionImages();
