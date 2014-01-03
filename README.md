@@ -24,7 +24,7 @@ Basic structure: Each faction has its own block in the "factions" section, conta
 
 	{
 		"id": "travellers", // Mandatory, must be unique and should contain no upper case, special chars or spaces!
-		"image": "traveller.png", // Optional, the relative or absolute path to a small faction logo as PNG file with alpha channel. Data URLs are also possible! (see http://dataurl.net/ for details)
+		"image": "traveller.png", // Optional, the relative or absolute path to a small faction logo as PNG file with alpha channel. Data URLs are also possible! (see http://dataurl.net/ for details). It is recommended to use a small 40x40 pixel image.
 		"name": "Travellers of the Windrose", // Mandatory, contains the full name of the faction
 		"color": "70,140,220", // Mandatory, contains the RGB encoded faction color (use Paint or GIMP for this).
 		"capital": 2, // Optional, contains the Id of the capital province.
@@ -41,6 +41,11 @@ Basic structure: Each faction has its own block in the "factions" section, conta
 There is another section called "abandoned". This sectionis contains a list of abandoned/deserted provinces. The province blocks are just like the ones for active sections. The "name" and "id" fields are mandatory, the "previousfactions" field is optional.
 
 Remember: All entries and blocks are separated by commas! Do not omit the list brackets! They are always required, even when the list does only contain one item. Another common mistake is to put a comma before closing brackets of blocks and lists.
+
+Customizing the map appearance
+==============================
+
+The appearance of the map can be customized by editing the CSS file map.css, the background image map.png and by changing the canvas drawing parameters in the header of the map.js file. The CSS file controls the layout and appearance of the html document around the map and the table with the scoreboard. The info box that appears when hovering a province is also controled by the CSS file. The background image can be used to change the general style of the map. For example, you could use a background image with a pergament paper style to achieve an "older" look. Or some kind of other stylized look. The white, clean look of the included example map comes from the background image which is toned heavily white. Other background images produce very different results! The thickness, opacity and color of the region, provinces and borders itself are controlled via the drawing settings in the map.js file.
 
 Other stuff
 ===========

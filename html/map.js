@@ -1,6 +1,22 @@
 var baseCanvas, baseCtx, selCanvas, selCtx;
 var provinces, factions, abandoned, map, regions = [];
 var totalImages, loadedImages;
+var drawConfig = {
+	"province-border-lineWidth": 0.5,
+	"province-border-strokeStyle": "black",
+	"province-regular-opacity": 0.4,
+	"province-heartland-opacity": 0.6,
+	"highlight-border-lineWidth": 3,
+	"highlight-border-strokeStyle": "orange",
+	"region-border-lineWidth": 2,
+	"region-border-strokeStyle": "black",
+	"vassal-border-innerWidth": 5,
+	"vassal-border-opacity": 0.6,
+	"contested-pattern-opacity": 0.6,
+	"capital-image-size": 40,
+	"capital-star-size": 20,
+	"capital-star-fillStyle": "black"
+};
 
 $(document).ready(startup);
 
@@ -142,8 +158,8 @@ function highlightProvince(provinceId)
 	selCtx.clearRect(0, 0, selCanvas.width, selCanvas.height);
 	if (provinceId != -1) {
 		var province = provinces[provinceId];
-		selCtx.strokeStyle = "orange";
-		selCtx.lineWidth = 3;
+		selCtx.strokeStyle = drawConfig["highlight-border-strokeStyle"];
+		selCtx.lineWidth = drawConfig["highlight-border-lineWidth"];
 		var x = province.points[0].x * selCanvas.width;
 		var y = province.points[0].y * selCanvas.height;
 		selCtx.beginPath();
@@ -197,8 +213,8 @@ function drawMap()
 
 function drawProvinces()
 {
-	baseCtx.lineWidth = 0.5;
-	baseCtx.strokeStyle = "black";
+	baseCtx.lineWidth = drawConfig["province-border-lineWidth"];
+	baseCtx.strokeStyle = drawConfig["province-border-strokeStyle"];
 	$.each(provinces, function(k, province) {
 		var x = province.points[0].x * baseCanvas.width;
 		var y = province.points[0].y * baseCanvas.height;
@@ -211,16 +227,17 @@ function drawProvinces()
 		}
 		baseCtx.closePath();
 		if (province.faction >= 0) {
-			var opacity = "0.4";
-			if (province.heartland) opacity = "0.7";
+			var opacity = drawConfig["province-regular-opacity"];
+			if (province.heartland)
+				opacity = drawConfig["province-heartland-opacity"];
 			baseCtx.fillStyle = "rgba(" + factions[province.faction].color + ", " + opacity + ")";
 			baseCtx.fill();
 			if (province.contestedby != -1) {
 				var img = document.createElement('canvas');
-				img.width = 5; img.height = 10;
+				img.width = 5; img.height = 5;
 				var imgctx = img.getContext("2d");
-				imgctx.fillStyle = "rgba(" + factions[province.contestedby].color + ", " + opacity + ")";
-				imgctx.fillRect(0, 0, 3, 10);
+				imgctx.fillStyle = "rgba(" + factions[province.contestedby].color + ", " + drawConfig["contested-pattern-opacity"] + ")";
+				imgctx.fillRect(0, 0, 3, 5);
 				var pattern = baseCtx.createPattern(img, "repeat");
 				baseCtx.fillStyle = pattern;
 				baseCtx.fill();
@@ -232,8 +249,8 @@ function drawProvinces()
 
 function drawRegionBorders()
 {
-	baseCtx.lineWidth = 2;
-	baseCtx.strokeStyle = "black";
+	baseCtx.lineWidth = drawConfig["region-border-lineWidth"];
+	baseCtx.strokeStyle = drawConfig["region-border-strokeStyle"];
 	for (var r = 0; r < regions.length; r++) {
 		var region = regions[r];
 		for (var e = 0; e < region.edges.length; e++) {
@@ -247,6 +264,7 @@ function drawRegionBorders()
 				y = edge.points[p].y * baseCanvas.height;
 				baseCtx.lineTo(x, y);
 			}
+			baseCtx.closePath();
 			baseCtx.stroke();
 		}
 	}
@@ -262,7 +280,7 @@ function drawVassalBorders()
     var borderCtx = borderCanvas.getContext("2d");
 	var provinceCtx = provinceCanvas.getContext("2d");
 
-	borderCtx.lineWidth = 10;
+	borderCtx.lineWidth = drawConfig["vassal-border-innerWidth"] * 2;
 	borderCtx.lineJoin = "round";
 	borderCtx.miterLimit = borderCtx.lineWidth;
 	
@@ -292,7 +310,7 @@ function drawVassalBorders()
 			}
 
 			// draw faction borders as thick line
-			borderCtx.strokeStyle = "rgba(" + color + ", 0.5)";
+			borderCtx.strokeStyle = "rgba(" + color + ", " + drawConfig["vassal-border-opacity"] + ")";
 			borderCtx.clearRect(0, 0, borderCanvas.width, borderCanvas.height);
 			for (var e = 0; e < faction.edges.length; e++) {
 				var edge = faction.edges[e];
@@ -327,10 +345,15 @@ function drawPointOfInterests()
 			var x = province.centroid.x * baseCanvas.width;
 			var y = province.centroid.y * baseCanvas.height;
 			if (typeof factions[f].imageobject !== "undefined") {
-				baseCtx.drawImage(factions[f].imageobject, x - 24, y - 24, 48, 48);
+				baseCtx.drawImage(
+					factions[f].imageobject,
+					x - drawConfig["capital-image-size"] / 2,
+					y - drawConfig["capital-image-size"] / 2,
+					drawConfig["capital-image-size"],
+					drawConfig["capital-image-size"]);
 			} else {
-				baseCtx.fillStyle = 'black';
-				fillStar(baseCtx, x, y, 10, 5, 0.4)
+				baseCtx.fillStyle = drawConfig["capital-star-fillStyle"];
+				fillStar(baseCtx, x, y, drawConfig["capital-star-size"] / 2, 5, 0.4)
 			}
 		}
 	}
@@ -507,9 +530,17 @@ function preprocessFactionData()
 			var edges = provinces[pid].edges;
 			for (var e = 0; e < edges.length; e++) {
 				if (!regions[r].provinces.contains(edges[e].neighbor)) {
-					regions[r].edges.push(edges[e]);
+					// Important: create a copy of the edge object
+					regions[r].edges.push(jQuery.extend({}, edges[e]));
 				}
 			}
+		}
+		
+		// Connect region border to polygon
+		for (var f = 0; f < factions.length; f++) {
+			var connectCount;
+			do { connectCount = connectEdges(regions[r].edges); }
+			while (connectCount > 0);
 		}
 	}
 	
