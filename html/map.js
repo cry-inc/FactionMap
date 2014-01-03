@@ -88,6 +88,7 @@ function finishedLoadingImages()
 function hookEvents()
 {
 	$("#drawstack").mousemove(onMouseOverMap);
+	$("#drawstack").mouseleave(onMouseLeaveMap);
 	$("#sortname").click(function(){createPointsTable("name")});
 	$("#sortpoints").click(function(){createPointsTable("-points")});
 	$("#sortprovinces").click(function(){createPointsTable("-provinces")});
@@ -192,6 +193,11 @@ function onMouseOverMap(event)
 	showInfoBox((found != -1), event.pageX, event.pageY, found);
 	highlightProvince(found);
 	showCoords(point);
+}
+
+function onMouseLeaveMap(event)
+{
+	$("#infoBox").css({display: "none"});
 }
 
 function showCoords(point)
