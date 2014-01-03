@@ -1,41 +1,51 @@
-#drawstack {
-	position: relative;
-	margin: 0px;
-	padding: 0px;
-	width: 850px;
-	height: 850px;
+#footer, #header {
+	text-align: center;
 }
 
 #content {
 	padding: 5px;
 }
 
+#map {
+	position: relative;
+	margin: auto;
+	width: 850px;
+	height: 850px;
+	padding-bottom: 5px;
+}
+
 #points {
+	margin: auto;
+	width: 850px;
 	display: none;
 }
 
-#baselayer {
-	position: absolute;
-	top: 0px;
-	left: 0px;
+#pointsTable {
+	border: 2px solid #dddddd;
+	width: 100%;
+}
+
+#pointsTable a {
+	text-decoration: none;
+}
+
+#pointsTable th {
+	background-color: #dddddd;
+}
+
+#baseLayer {
 	background-image: url(map.png);
 }
 
-#selectionlayer  {
+#highlightLayer, #baseLayer {
 	position: absolute;
 	top: 0px;
 	left: 0px;
 }
 
-#footer, #header {
-	width: 850px;
-	text-align: center;
-	padding-top: 10px;
-}
-
 #coords {
-	margin-top: 5px;
-	width: 850px;
+	width: 120px;
+	margin: auto;
 	height: 20;
 	text-align: center;
 	font-weight: bold;
@@ -91,19 +101,15 @@
 	background-size: 100%;
 }
 
-.imgcell {
+.factionIconCell {
 	text-align: center;
 	width: 25px;
 }
 
-.fimgtable {
+.factionIcon {
 	width: 20px;
 	height: 20px;
 	vertical-align: bottom;
-}
-
-a {
-	color: #7c0f0f;
 }
 
 body {
@@ -111,15 +117,10 @@ body {
 	font-family: sans-serif;
 }
 
-table {
-	border: 2px solid #dddddd;
-	width: 850px;
+a, a:link, a:visited, a:focus, a:active {
+	color: black;
 }
 
-th a {
-	text-decoration: none;
-}
-
-th {
-	background-color: #dddddd;
+a:hover {
+	color: red;
 }

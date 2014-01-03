@@ -1,4 +1,4 @@
-var baseCanvas, baseCtx, selCanvas, selCtx;
+var baseCanvas, baseCtx, highCanvas, highCtx;
 var provinces, factions, abandoned, map, regions = [];
 var totalImages, loadedImages;
 var drawConfig = {
@@ -23,8 +23,8 @@ $(document).ready(startup);
 function startup()
 {
 	setupCanvas();
-	$("#maplink").click(showMap);
-	$("#pointslink").click(showPoints);
+	$("#mapLink").click(showMap);
+	$("#pointsLink").click(showPoints);
 	$.when(
 		$.getJSON("provinces.json"),
 		$.getJSON("factions.json"),
@@ -34,12 +34,12 @@ function startup()
 
 function setupCanvas()
 {
-	baseCanvas = document.getElementById("baselayer");
+	baseCanvas = document.getElementById("baseLayer");
 	baseCtx = baseCanvas.getContext("2d");
-	selCanvas = document.getElementById("selectionlayer");
-	selCtx = selCanvas.getContext("2d");
-	baseCanvas.width = selCanvas.width = $("#drawstack").width();
-	baseCanvas.height = selCanvas.height = $("#drawstack").height();
+	highCanvas = document.getElementById("highlightLayer");
+	highCtx = highCanvas.getContext("2d");
+	baseCanvas.width = highCanvas.width = $("#map").width();
+	baseCanvas.height = highCanvas.height = $("#map").height();
 }
 
 function finishedLoadingJson(provincesResult, factionsResult, mapResults)
@@ -87,14 +87,14 @@ function finishedLoadingImages()
 
 function hookEvents()
 {
-	$("#drawstack").mousemove(onMouseOverMap);
-	$("#drawstack").mouseleave(onMouseLeaveMap);
-	$("#sortname").click(function(){createPointsTable("name")});
-	$("#sortpoints").click(function(){createPointsTable("-points")});
-	$("#sortprovinces").click(function(){createPointsTable("-provinces")});
-	$("#sortregions").click(function(){createPointsTable("-regions")});
-	$("#sortvassals").click(function(){createPointsTable("-vassals")});
-	$("#sortarea").click(function(){createPointsTable("-area")});
+	$("#map").mousemove(onMouseOverMap);
+	$("#map").mouseleave(onMouseLeaveMap);
+	$("#sortName").click(function(){createPointsTable("name")});
+	$("#sortPoints").click(function(){createPointsTable("-points")});
+	$("#sortProvinces").click(function(){createPointsTable("-provinces")});
+	$("#sortRegions").click(function(){createPointsTable("-regions")});
+	$("#sortVassals").click(function(){createPointsTable("-vassals")});
+	$("#sortArea").click(function(){createPointsTable("-area")});
 }
 
 function showInfoBox(visible, screenx, screeny, provinceId)
@@ -156,28 +156,28 @@ function showInfoBox(visible, screenx, screeny, provinceId)
 
 function highlightProvince(provinceId)
 {
-	selCtx.clearRect(0, 0, selCanvas.width, selCanvas.height);
+	highCtx.clearRect(0, 0, highCanvas.width, highCanvas.height);
 	if (provinceId != -1) {
 		var province = provinces[provinceId];
-		selCtx.strokeStyle = drawConfig["highlight-border-strokeStyle"];
-		selCtx.lineWidth = drawConfig["highlight-border-lineWidth"];
-		var x = province.points[0].x * selCanvas.width;
-		var y = province.points[0].y * selCanvas.height;
-		selCtx.beginPath();
-		selCtx.moveTo(x, y);
+		highCtx.strokeStyle = drawConfig["highlight-border-strokeStyle"];
+		highCtx.lineWidth = drawConfig["highlight-border-lineWidth"];
+		var x = province.points[0].x * highCanvas.width;
+		var y = province.points[0].y * highCanvas.height;
+		highCtx.beginPath();
+		highCtx.moveTo(x, y);
 		for (var i = 1; i < province.points.length; i++) {
-			x = province.points[i].x * selCanvas.width;
-			y = province.points[i].y * selCanvas.height;
-			selCtx.lineTo(x, y);
+			x = province.points[i].x * highCanvas.width;
+			y = province.points[i].y * highCanvas.height;
+			highCtx.lineTo(x, y);
 		}
-		selCtx.closePath();
-		selCtx.stroke();
+		highCtx.closePath();
+		highCtx.stroke();
 	}
 }
 
 function onMouseOverMap(event)
 {
-	var ofs = $("#drawstack").offset();
+	var ofs = $("#map").offset();
 	var rx = event.pageX - ofs.left;
 	var ry = event.pageY - ofs.top;
 	rx /= baseCanvas.width;
@@ -198,6 +198,7 @@ function onMouseOverMap(event)
 function onMouseLeaveMap(event)
 {
 	$("#infoBox").css({display: "none"});
+	$("#coords").html("&nbsp;");
 }
 
 function showCoords(point)
@@ -695,11 +696,11 @@ function generateHtmlRow(fo)
 {
 	var image = "&nbsp;";
 	if (typeof fo.image !== "undefined") {
-		image = "<img class=\"fimgtable\" src=\"" + fo.image + "\" />";
+		image = "<img class=\"factionIcon\" src=\"" + fo.image + "\" />";
 	}
 
 	var html = "<tr>";
-	html += "<td class=\"imgcell\" style=\"background-color:rgb(" + fo.color + ")\">" + image + "</td>";
+	html += "<td class=\"factionIconCell\" style=\"background-color:rgb(" + fo.color + ")\">" + image + "</td>";
 	html += "<td>" + fo.name + "</td>";
 	html += "<td>" + fo.points + "</td>";
 	html += "<td>" + fo.provinces + "</td>";
@@ -728,7 +729,7 @@ function createPointsTable(orderCriteria)
 	var html = "";
 	for (var f=0; f<factionObjects.length; f++)
 		html += generateHtmlRow(factionObjects[f]);
-	$("#tablebody").html(html);
+	$("#tableBody").html(html);
 }
 
 function dynamicSort(property)
@@ -746,16 +747,16 @@ function dynamicSort(property)
 
 function showMap()
 {
-	$("#drawstack").css({display: "block"});
+	$("#map").css({display: "block"});
 	$("#coords").css({display: "block"});
 	$("#points").css({display: "none"});
 }
 
 function showPoints()
 {
-	$("#drawstack").css({display: "none"});
+	$("#map").css({display: "none"});
 	$("#coords").css({display: "none"});
-	$("#infobox").css({display: "none"});
+	$("#infoBox").css({display: "none"});
 	$("#points").css({display: "block"});
 }
 

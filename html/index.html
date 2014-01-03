@@ -9,27 +9,27 @@
 	</head>
 	<body>
 		<div id="header">
-			<a id="maplink" href="#">Map</a> | <a id="pointslink" href="#">Points</a>
+			<a id="mapLink" href="#">Map</a> | <a id="pointsLink" href="#">Points</a>
 		</div>
 		<div id="content">
-			<div id="drawstack">
-				<canvas id="baselayer"></canvas>
-				<canvas id="selectionlayer"></canvas>
+			<div id="map">
+				<canvas id="baseLayer"></canvas>
+				<canvas id="highlightLayer"></canvas>
 			</div>
 			<div id="points">
-				<table>
+				<table id="pointsTable">
 					<thead>
 						<tr>
 							<th>&nbsp;</th>
-							<th><a id="sortname" href="#">Faction</a></th>
-							<th><a id="sortpoints" href="#">Points</a></th>
-							<th><a id="sortprovinces" href="#">Provinces</a></th>
-							<th><a id="sortregions" href="#">Regions</a></th>
-							<th><a id="sortvassals" href="#">Vassals</a></th>
-							<th><a id="sortarea" href="#">Land</a></th>
+							<th><a id="sortName" href="#">Faction</a></th>
+							<th><a id="sortPoints" href="#">Points</a></th>
+							<th><a id="sortProvinces" href="#">Provinces</a></th>
+							<th><a id="sortRegions" href="#">Regions</a></th>
+							<th><a id="sortVassals" href="#">Vassals</a></th>
+							<th><a id="sortArea" href="#">Land</a></th>
 						</tr>
 					</thead>
-					<tbody id="tablebody"></tbody>
+					<tbody id="tableBody"></tbody>
 				</table>
 			</div>
 			<div id="coords">&nbsp;</div>
