@@ -42,63 +42,50 @@
 	background-color: #dddddd;
 }
 
-#infobox {
-	display: none;
-	position: absolute;
-	width: 202px;
-	background-color: white;
+#infoBox {
+	border: 1px solid black;
+	border-radius: 6px;
 	padding: 3px;
-	font-size: 8pt;
+	position: absolute;
 	background-color: white;
-	min-height: 110px;
+}
+
+#infoRight {
+	width: 40px;
+	float: left;
+}
+
+#infoLeft {
+	width: 150px;
+	float: left;
+	margin-right: 3px;
 }
 
 #infoIdLabel, #infoAreaLabel, #infoProvinceLabel, #infoFactionLabel, #infoRegionLabel, #infoVassalLabel, #infoContestedLabel, #infoPreviousLabel {
 	font-size: 7pt;
 	color: #999999;
-	background-color: white;
 }
 
 #infoProvince, #infoFaction, #infoRegion, #infoVassal, #infoContested, #infoPrevious {
-	width: 155px;
 	font-size: 9pt;
-	background-color: white;
-}
-
-#infoIdLabel {
-	position: absolute;
-	top: 0px; left: 165px;
 }
 
 #infoId {
-	position: absolute;
-	top: 10px; left: 165px;
 	font-size: 16pt;
 	font-weight: bold;
 }
 
-#infoAreaLabel {
-	position: absolute;
-	top: 35px; left: 165px;
-}
-
 #infoArea {
-	position: absolute;
-	top: 46px; left: 165px;
 	font-size: 10pt;
 	font-weight: bold;
 }
 
 #infoHeartland {
-	position: absolute;
-	top: 63px; left: 165px;
 	font-size: 7pt;
 	color: #999999;
 }
 
 #infoImage {
-	position: absolute;
-	top: 73px; left: 165px;
 	width: 40px;
 	height: 40px;
 	background-size: 100%;

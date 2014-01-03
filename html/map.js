@@ -100,17 +100,17 @@ function showInfoBox(visible, screenx, screeny, provinceId)
 {
 	if (visible) {
 		var province = provinces[provinceId];
-		$("#infobox").css({left: screenx + 5, top: screeny + 5 });
+		$("#infoBox").css({left: screenx + 5, top: screeny + 5 });
 		$("#infoId").html(provinceId);
 		$("#infoArea").html(areaToString(province.area));
 		$("#infoHeartland").css({display: province.heartland ? "block" : "none"});
 
-		$("#infoIfProvince,#infoIfPrevious,#infoIfContested,#infoIfFaction,#infoIfRegion,#infoIfVassal,#infoImage").css(
+		$("#infoLeft,#infoIfProvince,#infoIfPrevious,#infoIfContested,#infoIfFaction,#infoIfRegion,#infoIfVassal,#infoImage").css(
 			{display: "none"}
 		);
 
 		if (province.faction != -1) {
-			$("#infoIfProvince").css({display: "block" });
+			$("#infoLeft,#infoIfProvince").css({display: "block" });
 			$("#infoProvince").html(province.name);
 		}
 
@@ -150,7 +150,7 @@ function showInfoBox(visible, screenx, screeny, provinceId)
 			}
 		}
 	}
-	$("#infobox").css({display: visible ? "block" : "none"});
+	$("#infoBox").css({display: visible ? "block" : "none"});
 }
 
 function highlightProvince(provinceId)
