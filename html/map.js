@@ -520,10 +520,12 @@ function preprocessFactionData()
 			provinces[i].heartland = true;
 			for (var j = 0; j < provinces[i].edges.length; j++) {
 				var neighborId = provinces[i].edges[j].neighbor;
-				if (neighborId < 0 || provinces[neighborId].faction < 0 ||
-					provinces[neighborId].faction != provinces[i].faction) {
-					provinces[i].heartland = false;
-					break;
+				if (neighborId >= 0) {
+					if (provinces[neighborId].faction < 0 || 
+						provinces[neighborId].faction != provinces[i].faction) {
+						provinces[i].heartland = false;
+						break;
+					}
 				}
 			}
 		}

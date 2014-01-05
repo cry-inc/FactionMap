@@ -9,7 +9,8 @@
 			"provinces": [
 				{"id": 2, "name": "Windfall Keys", "previousfactions": ["imaginary", "fiction"]},
 				{"id": 1, "name": "Upper Antilles", "previousfactions": ["imaginary"]},
-				{"id": 16, "name": "Lower Antilles"}
+				{"id": 16, "name": "Lower Antilles"},
+				{"id": 10, "name": "Deserted Keys", "previousfactions": ["disbanded"]}
 			],
 			"vassals": [ "imaginary" ],
 			"regions": [ ]
@@ -44,7 +45,6 @@
 		}
 	],
 	"abandoned": [
-		{"id": 10, "name": "Deserted Keys", "previousfactions": ["imaginary", "travellers"]},
 		{"id": 56, "name": "Abandoned Keys", "previousfactions": ["disbanded", "travellers"]},
 		{"id": 60, "name": "Abandoned Grounds", "previousfactions": ["imaginary"]}
 	]
