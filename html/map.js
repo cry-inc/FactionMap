@@ -26,9 +26,9 @@ function startup()
 	$("#mapLink").click(showMap);
 	$("#pointsLink").click(showPoints);
 	$.when(
-		$.getJSON("provinces.json"),
-		$.getJSON("factions.json"),
-		$.getJSON("map.json")
+		$.getJSON("provinces.json").error(function(){alert("Could not load file 'provinces.json!'");}),
+		$.getJSON("factions.json").error(function(){alert("Could not load file 'factions.json!'");}),
+		$.getJSON("map.json").error(function(){alert("Could not load file 'map.json!'");})
 	).done(finishedLoadingJson);
 }
 
