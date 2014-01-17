@@ -55,10 +55,10 @@ function finishedLoadingJson(provincesResult, factionsResult, mapResults)
 	loadFactionImages();
 }
 
-function loadedImage()
+function checkForAllImagesLoaded()
 {
 	loadedImages++;
-	if (loadedImages > 0 && totalImages == loadedImages) {
+	if (totalImages == loadedImages) {
 		finishedLoadingImages();
 	}
 }
@@ -69,10 +69,17 @@ function loadFactionImages()
 	var count = 0;
 	for (var f = 0; f < factions.length; f++) {		
 		if (typeof factions[f].image !== "undefined") {
-			factions[f].imageobject = new Image;
-			$(factions[f].imageobject).load(loadedImage);
-			factions[f].imageobject.src = factions[f].image;
-			count++;
+			(function(factionId){ // create copy of f to use the correct value when the callback gets executed
+				factions[factionId].imageobject = new Image;
+				$(factions[factionId].imageobject).load(checkForAllImagesLoaded).error(function() {
+					delete factions[factionId].imageobject;
+					delete factions[factionId].image;
+					alert("Failed to load image of faction '" + factions[factionId].name + "'");
+					checkForAllImagesLoaded();
+				});
+				factions[factionId].imageobject.src = factions[factionId].image;
+				count++;
+			})(f);
 		}
 	}
 	totalImages = count;
