@@ -6,6 +6,7 @@
 	$mapUrl = '../';                // Relative or absolute path for accessing the faction map over HTTP
 	// end config variables
 
+	mb_internal_encoding('UTF-8');
 	if (isset($_GET['backup']) && $_GET['backup'] === 'true') {
 		$file = tempnam(sys_get_temp_dir(), "zip");
 		
@@ -56,6 +57,10 @@
 	
 	if ($factionData === FALSE) {
 		$factionData = file_get_contents($factionFile);
+		$bom = pack("CCC", 0xef, 0xbb, 0xbf);
+		if (0 === strncmp($factionData, $bom, 3)) {
+			$factionData = substr($factionData, 3);
+		}
 		if ($factionData === FALSE) {
 			$message = '<span style="color:red">Could not load file ' . $factionFile . '!</span>';
 			$factionData = '';
@@ -63,8 +68,10 @@
 	}
 
 ?>
+<!doctype html>
 <html>
 	<head>
+		<meta charset="utf-8" />
 		<title>Faction Map Admin Panel</title>
 		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script type="text/javascript">
@@ -102,7 +109,7 @@
 			<a target="_blank" href="<?php echo $mapUrl; ?>">Link to the Faction Map</a> |  
 			<a target="_blank" href="?backup=true">Download ZIP compressed backup of all files</a><br />
 			<textarea id="ta" autocorrect="off" autocapitalize="off" spellcheck="false"
-				style="width:90%;height:90%" name="data"><?php echo $factionData; ?></textarea><br />
+				style="width:90%; height:850px" name="data"><?php echo $factionData; ?></textarea><br />
 			<input type="hidden" name="filetime" value="<?php echo $lastEdit; ?>" />
 			<input type="submit" value="Save" />
 		</form>

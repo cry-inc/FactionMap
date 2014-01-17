@@ -25,6 +25,7 @@ function startup()
 	setupCanvas();
 	$("#mapLink").click(showMap);
 	$("#pointsLink").click(showPoints);
+	$.ajaxSetup({scriptCharset: "utf-8", contentType: "application/json; charset=utf-8"});
 	$.when(
 		$.getJSON("provinces.json").error(function(){alert("Could not load file 'provinces.json!'");}),
 		$.getJSON("factions.json").error(function(){alert("Could not load file 'factions.json!'");}),

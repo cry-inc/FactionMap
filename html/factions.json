@@ -9,7 +9,7 @@
 			"provinces": [
 				{"id": 2, "name": "Windfall Keys", "previousfactions": ["imaginary", "fiction"]},
 				{"id": 1, "name": "Upper Antilles", "previousfactions": ["imaginary"]},
-				{"id": 16, "name": "Lower Antilles"},
+				{"id": 16, "name": "Tides of UTF8 - Äüß κόσμε"},
 				{"id": 10, "name": "Deserted Keys", "previousfactions": ["disbanded"]}
 			],
 			"vassals": [ "imaginary" ],
