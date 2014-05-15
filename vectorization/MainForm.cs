@@ -43,8 +43,8 @@ namespace MapExtractor
         public MainForm()
         {
             InitializeComponent();
-            Image img = Image.FromFile("../../map.png");
-            LoadImage(img);
+            //Image img = Image.FromFile("../../map.png");
+            //LoadImage(img);
         }
 
         private void buttonOriginal_Click(object sender, EventArgs e)
